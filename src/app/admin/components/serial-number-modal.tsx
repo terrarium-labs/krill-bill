@@ -69,19 +69,19 @@ export default function SerialNumberModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg max-w-md w-full mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {mode === 'create'
               ? 'Create Serial Number'
               : 'Edit Serial Number'}
           </h2>
           <button
             onClick={() => onOpenChange(false)}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
-            <X size={20} className="text-gray-600" />
+            <X size={20} className="text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
@@ -89,7 +89,7 @@ export default function SerialNumberModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               Name
             </label>
             <input
@@ -98,21 +98,21 @@ export default function SerialNumberModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
                 errors.name
-                  ? 'border-red-300 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500'
+                  ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
+                  : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
               }`}
               placeholder="e.g., SI, PI, ORD"
             />
             {errors.name && (
-              <p className="text-red-600 text-sm mt-1">{errors.name}</p>
+              <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name}</p>
             )}
           </div>
 
           {/* Entity */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               Entity Type
             </label>
             <select
@@ -123,7 +123,7 @@ export default function SerialNumberModal({
                   entity: e.target.value as SerialNumberEntity,
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {ENTITIES.map((entity) => (
                 <option key={entity.value} value={entity.value}>
@@ -135,7 +135,7 @@ export default function SerialNumberModal({
 
           {/* Pattern Value */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               Pattern
             </label>
             <input
@@ -144,36 +144,36 @@ export default function SerialNumberModal({
               onChange={(e) =>
                 setFormData({ ...formData, value: e.target.value })
               }
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
                 errors.value
-                  ? 'border-red-300 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500'
+                  ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
+                  : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
               }`}
               placeholder="e.g., INV-[YYYY]-%%%%%"
             />
             {errors.value && (
-              <p className="text-red-600 text-sm mt-1">{errors.value}</p>
+              <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.value}</p>
             )}
             
             {/* Helper text with examples */}
-            <div className="mt-3 p-3 bg-blue-50 rounded-md border border-blue-200">
-              <p className="text-xs font-semibold text-blue-900 mb-2">Pattern Format:</p>
-              <ul className="text-xs text-blue-800 space-y-1 ml-3">
-                <li>• Use <code className="bg-white px-1 rounded">%%%%</code> for number digits (each % = one digit)</li>
-                <li>• Use <code className="bg-white px-1 rounded">[YYYY]</code> for year (2026)</li>
-                <li>• Use <code className="bg-white px-1 rounded">[YY]</code> for short year (26)</li>
-                <li>• Use <code className="bg-white px-1 rounded">[MM]</code> for month (01-12)</li>
-                <li>• Use <code className="bg-white px-1 rounded">[DD]</code> for day (01-31)</li>
+            <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-2">Pattern Format:</p>
+              <ul className="text-xs text-blue-800 dark:text-blue-300 space-y-1 ml-3">
+                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">%%%%</code> for number digits (each % = one digit)</li>
+                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[YYYY]</code> for year (2026)</li>
+                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[YY]</code> for short year (26)</li>
+                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[MM]</code> for month (01-12)</li>
+                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[DD]</code> for day (01-31)</li>
               </ul>
             </div>
 
             {/* Real-time preview */}
             {formData.value && validatePattern(formData.value).valid && (
-              <div className="mt-3 p-3 bg-green-50 rounded-md border border-green-200">
-                <p className="text-xs text-green-700 font-medium mb-1">
+              <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+                <p className="text-xs text-green-700 dark:text-green-300 font-medium mb-1">
                   Next example (starting from {formData.last_num_value}):
                 </p>
-                <p className="text-sm font-mono font-semibold text-green-900">
+                <p className="text-sm font-mono font-semibold text-green-900 dark:text-green-200">
                   {generateNextDocumentNumber(formData.value, formData.last_num_value)}
                 </p>
               </div>
@@ -182,7 +182,7 @@ export default function SerialNumberModal({
 
           {/* Last Number */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               Last Number Used
             </label>
             <input
@@ -195,14 +195,14 @@ export default function SerialNumberModal({
                 })
               }
               min="0"
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
                 errors.last_num_value
-                  ? 'border-red-300 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500'
+                  ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
+                  : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
               }`}
             />
             {errors.last_num_value && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                 {errors.last_num_value}
               </p>
             )}
@@ -213,7 +213,7 @@ export default function SerialNumberModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>

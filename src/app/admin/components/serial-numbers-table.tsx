@@ -17,48 +17,48 @@ export default function SerialNumbersTable({
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <div className="text-6xl mb-4">📋</div>
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           No serial numbers found
         </h3>
-        <p className="text-gray-600 mt-1">Create your first serial number to get started</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Create your first serial number to get started</p>
       </div>
     );
   }
 
   return (
     <table className="w-full">
-      <thead className="bg-gray-50 border-b border-gray-200">
+      <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
             Name
           </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
             Entity
           </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
             Pattern
           </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
             Next Number
           </th>
-          <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">
+          <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
             Actions
           </th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-200">
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
         {data.map((sn) => (
-          <tr key={sn.id} className="hover:bg-gray-50 transition-colors">
-            <td className="px-6 py-4 font-medium text-gray-900">{sn.name}</td>
-            <td className="px-6 py-4 text-gray-600">
-              <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-blue-50 text-blue-700">
+          <tr key={sn.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{sn.name}</td>
+            <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+              <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
                 {sn.entity.replace('_', ' ')}
               </span>
             </td>
-            <td className="px-6 py-4 font-mono text-sm text-gray-600">
+            <td className="px-6 py-4 font-mono text-sm text-gray-600 dark:text-gray-400">
               {sn.value}
             </td>
-            <td className="px-6 py-4 font-mono text-sm font-semibold text-green-700 bg-green-50 rounded px-2 py-1 inline-block">
+            <td className="px-6 py-4 font-mono text-sm font-semibold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded px-2 py-1 inline-block">
               {generateNextDocumentNumber(sn.value, sn.last_num_value) || '-'}
             </td>
             <td className="px-6 py-4 text-right">
