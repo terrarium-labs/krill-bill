@@ -36,7 +36,7 @@ bun run dev
 
 ## Deployment Direction
 
-Primary deployment target is Cloudflare Pages. Deployment workflow scaffolding is included and can be connected to Cloudflare credentials when ready.
+Primary deployment target is Cloudflare Pages, managed manually through the Cloudflare Workers and Pages dashboard.
 
 ## License
 
