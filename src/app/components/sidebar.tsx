@@ -1,4 +1,4 @@
-import { ChevronLeft, Home, Settings, Package, Sun, Moon, Globe } from 'lucide-react';
+import { ChevronLeft, Home, Settings, Sun, Moon } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useState } from 'react';
 import { useApp } from '../../contexts/app-context';
@@ -143,27 +143,20 @@ export default function Sidebar({ open, onOpenChange }: SidebarProps) {
           {/* Theme Toggle */}
           <button
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
           >
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-            {open && <span className="text-sm font-medium flex-1 text-left">{theme === 'light' ? 'Dark' : 'Light'}</span>}
           </button>
 
           {/* Language Selector */}
-          <div className="flex items-center gap-2 px-3 py-2">
-            <Globe size={20} className="text-gray-600 dark:text-gray-400 flex-shrink-0" />
-            {open && (
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as Language)}
-                className="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-1"
-              >
-                <option value="en">English</option>
-                <option value="es">Español</option>
-              </select>
-            )}
-          </div>
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+            className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-semibold"
+            title={`Switch to ${language === 'en' ? 'Spanish' : 'English'}`}
+          >
+            {language.toUpperCase()}
+          </button>
         </div>
 
         {/* Footer */}
