@@ -12,14 +12,14 @@ const mockSerialNumbers: SerialNumber[] = [
     id: '1',
     entity: 'sales_invoices',
     name: 'SI',
-    value: 'SI-2026-',
+    value: 'SI-[YYYY]-%%%%',
     last_num_value: 100,
   },
   {
     id: '2',
     entity: 'purchase_invoices',
     name: 'PI',
-    value: 'PI-2026-',
+    value: 'PI-[MM]/[YYYY]-%%%',
     last_num_value: 45,
   },
 ];

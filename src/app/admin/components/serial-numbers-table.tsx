@@ -1,5 +1,6 @@
 import { SerialNumber } from '../../types/serial-numbers';
 import { Edit2, Trash2 } from 'lucide-react';
+import { generateNextDocumentNumber } from '../utils/serial-number-patterns';
 
 interface SerialNumbersTableProps {
   data: SerialNumber[];
@@ -38,7 +39,7 @@ export default function SerialNumbersTable({
             Pattern
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-            Last Number
+            Next Number
           </th>
           <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">
             Actions
@@ -57,7 +58,9 @@ export default function SerialNumbersTable({
             <td className="px-6 py-4 font-mono text-sm text-gray-600">
               {sn.value}
             </td>
-            <td className="px-6 py-4 text-gray-600">{sn.last_num_value}</td>
+            <td className="px-6 py-4 font-mono text-sm font-semibold text-green-700 bg-green-50 rounded px-2 py-1 inline-block">
+              {generateNextDocumentNumber(sn.value, sn.last_num_value) || '-'}
+            </td>
             <td className="px-6 py-4 text-right">
               <div className="flex items-center justify-end gap-2">
                 <button
