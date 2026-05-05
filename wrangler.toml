@@ -1,0 +1,10 @@
+name = "krill-bill"
+type = "javascript"
+
+[build]
+command = "bun install && bun run build"
+cwd = "./"
+
+[build.upload]
+format = "service-worker"
+dir = "dist"
