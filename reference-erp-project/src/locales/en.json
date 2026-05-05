@@ -1,0 +1,63 @@
+{
+    "languages": {
+        "en": "English",
+        "es": "Spanish",
+        "ca": "Catalan"
+    },
+    "common": {
+        "billingPeriod": {
+            "daily": "day",
+            "weekly": "week",
+            "monthly": "month",
+            "yearly": "year"
+        },
+        "months": {
+            "january": "January",
+            "february": "February",
+            "march": "March",
+            "april": "April",
+            "may": "May",
+            "june": "June",
+            "july": "July",
+            "august": "August",
+            "september": "September",
+            "october": "October",
+            "november": "November",
+            "december": "December"
+        }
+    },
+    "errorBoundary": {
+        "title": "Something went wrong",
+        "description": "An unexpected error occurred. Please try refreshing the page.",
+        "reload": "Reload page",
+        "tryAgain": "Try again",
+        "showDetails": "Show details",
+        "hideDetails": "Hide details"
+    },
+    "chat": {
+        "tool_bash": "Running command",
+        "tool_running_bash": "Running command...",
+        "tool_read": "Reading",
+        "tool_reading": "Reading file...",
+        "tool_write": "Writing",
+        "tool_writing": "Writing file...",
+        "tool_edit": "Editing",
+        "tool_editing": "Editing file...",
+        "tool_web_search": "Searching",
+        "tool_searching": "Searching web...",
+        "tool_default": "Running {{name}}",
+        "tool_running_default": "Running {{name}}...",
+        "thought": "Thought",
+        "thinking": "Thinking...",
+        "planning_next_moves": "Planning next moves...",
+        "traceback": "Traceback",
+        "actions": {
+            "newChat": "New chat",
+            "chatHistory": "Chat history",
+            "attachFiles": "Attach files",
+            "recordVoice": "Record voice",
+            "stopRecording": "Stop recording",
+            "sendMessage": "Send message"
+        }
+    }
+}

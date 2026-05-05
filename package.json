@@ -44,7 +44,10 @@
   "packageManager": "bun@1.2.15",
   "dependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-router": "^7.2.0",
+    "lucide-react": "^0.475.0",
+    "sonner": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

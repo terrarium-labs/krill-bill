@@ -1,0 +1,63 @@
+{
+    "languages": {
+        "en": "Inglés",
+        "es": "Español",
+        "ca": "Catalán"
+    },
+    "common": {
+        "billingPeriod": {
+            "daily": "día",
+            "weekly": "semana",
+            "monthly": "mes",
+            "yearly": "año"
+        },
+        "months": {
+            "january": "Enero",
+            "february": "Febrero",
+            "march": "Marzo",
+            "april": "Abril",
+            "may": "Mayo",
+            "june": "Junio",
+            "july": "Julio",
+            "august": "Agosto",
+            "september": "Septiembre",
+            "october": "Octubre",
+            "november": "Noviembre",
+            "december": "Diciembre"
+        }
+    },
+    "errorBoundary": {
+        "title": "Algo salió mal",
+        "description": "Ocurrió un error inesperado. Por favor, intenta actualizar la página.",
+        "reload": "Recargar página",
+        "tryAgain": "Intentar de nuevo",
+        "showDetails": "Ver detalles",
+        "hideDetails": "Ocultar detalles"
+    },
+    "chat": {
+        "tool_bash": "Ejecutando comando",
+        "tool_running_bash": "Ejecutando comando...",
+        "tool_read": "Leyendo",
+        "tool_reading": "Leyendo archivo...",
+        "tool_write": "Escribiendo",
+        "tool_writing": "Escribiendo archivo...",
+        "tool_edit": "Editando",
+        "tool_editing": "Editando archivo...",
+        "tool_web_search": "Buscando",
+        "tool_searching": "Buscando en la web...",
+        "tool_default": "Ejecutando {{name}}",
+        "tool_running_default": "Ejecutando {{name}}...",
+        "thought": "Pensamiento",
+        "thinking": "Pensando...",
+        "planning_next_moves": "Planificando próximos pasos...",
+        "traceback": "Rastreo",
+        "actions": {
+            "newChat": "Nuevo chat",
+            "chatHistory": "Historial de chat",
+            "attachFiles": "Adjuntar archivos",
+            "recordVoice": "Grabar voz",
+            "stopRecording": "Detener grabación",
+            "sendMessage": "Enviar mensaje"
+        }
+    }
+}

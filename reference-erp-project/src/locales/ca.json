@@ -1,0 +1,63 @@
+{
+    "languages": {
+        "en": "Anglès",
+        "es": "Espanyol",
+        "ca": "Català"
+    },
+    "common": {
+        "billingPeriod": {
+            "daily": "dia",
+            "weekly": "setmana",
+            "monthly": "mes",
+            "yearly": "any"
+        },
+        "months": {
+            "january": "Gener",
+            "february": "Febrer",
+            "march": "Març",
+            "april": "Abril",
+            "may": "Maig",
+            "june": "Juny",
+            "july": "Juliol",
+            "august": "Agost",
+            "september": "Setembre",
+            "october": "Octubre",
+            "november": "Novembre",
+            "december": "Desembre"
+        }
+    },
+    "errorBoundary": {
+        "title": "Alguna cosa ha anat malament",
+        "description": "S'ha produït un error inesperat. Si us plau, intenta actualitzar la pàgina.",
+        "reload": "Recarregar pàgina",
+        "tryAgain": "Tornar a intentar",
+        "showDetails": "Mostrar detalls",
+        "hideDetails": "Amagar detalls"
+    },
+    "chat": {
+        "tool_bash": "Executant comanda",
+        "tool_running_bash": "Executant comanda...",
+        "tool_read": "Llegint",
+        "tool_reading": "Llegint arxiu...",
+        "tool_write": "Escrivint",
+        "tool_writing": "Escrivint arxiu...",
+        "tool_edit": "Editant",
+        "tool_editing": "Editant arxiu...",
+        "tool_web_search": "Cercant",
+        "tool_searching": "Cercant al web...",
+        "tool_default": "Executant {{name}}",
+        "tool_running_default": "Executant {{name}}...",
+        "thought": "Pensament",
+        "thinking": "Pensant...",
+        "planning_next_moves": "Planificant següents passos...",
+        "traceback": "Rastre",
+        "actions": {
+            "newChat": "Nou chat",
+            "chatHistory": "Historial de chat",
+            "attachFiles": "Adjuntar fitxers",
+            "recordVoice": "Gravar veu",
+            "stopRecording": "Aturar grabació",
+            "sendMessage": "Enviar missatge"
+        }
+    }
+}

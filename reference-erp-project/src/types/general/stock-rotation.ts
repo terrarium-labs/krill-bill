@@ -1,0 +1,1 @@
+export type StockRotation = "fifo" | "lifo" | "fefo" | "lefo" | "hifo" | "lofo";

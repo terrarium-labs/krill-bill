@@ -1,0 +1,227 @@
+/* TipTap Editor Styles */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: oklch(0.556 0 0);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.dark .ProseMirror p.is-editor-empty:first-child::before {
+  color: oklch(0.708 0 0);
+}
+
+/* Image resizing handles */
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid oklch(0.708 0 0);
+  outline-offset: 2px;
+}
+
+.dark .ProseMirror img.ProseMirror-selectednode {
+  outline-color: oklch(0.439 0 0);
+}
+
+/* Better focus styles for the editor */
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Ensure proper spacing in lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.25rem;
+}
+
+/* Code block styling */
+.ProseMirror pre {
+  background: oklch(0.97 0 0);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.dark .ProseMirror pre {
+  background: oklch(0.269 0 0);
+}
+
+/* Blockquote styling */
+.ProseMirror blockquote {
+  border-left: 4px solid oklch(0.708 0 0);
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: oklch(0.556 0 0);
+}
+
+.dark .ProseMirror blockquote {
+  border-left-color: oklch(0.439 0 0);
+  color: oklch(0.708 0 0);
+}
+
+/* Blog editor image overrides to prevent prose interference */
+.prose .blog-editor-image,
+.prose img.blog-editor-image,
+.ProseMirror .blog-editor-image,
+.ProseMirror img.blog-editor-image {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  max-width: 100% !important;
+  height: auto !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+}
+
+/* Width handling */
+.prose .blog-editor-image[data-width],
+.ProseMirror .blog-editor-image[data-width] {
+  width: attr(data-width px) !important;
+}
+
+.prose .blog-editor-image[data-width="200"],
+.ProseMirror .blog-editor-image[data-width="200"] {
+  width: 200px !important;
+}
+
+.prose .blog-editor-image[data-width="400"],
+.ProseMirror .blog-editor-image[data-width="400"] {
+  width: 400px !important;
+}
+
+.prose .blog-editor-image[data-width="600"],
+.ProseMirror .blog-editor-image[data-width="600"] {
+  width: 600px !important;
+}
+
+/* Force aspect ratio to work */
+.prose .blog-editor-image[data-aspect-ratio],
+.ProseMirror .blog-editor-image[data-aspect-ratio] {
+  object-fit: cover !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="square"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="square"] {
+  aspect-ratio: 1 / 1 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="4/3"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="4/3"] {
+  aspect-ratio: 4 / 3 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="3/2"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="3/2"] {
+  aspect-ratio: 3 / 2 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="16/9"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="16/9"] {
+  aspect-ratio: 16 / 9 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="21/9"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="21/9"] {
+  aspect-ratio: 21 / 9 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="3/4"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="3/4"] {
+  aspect-ratio: 3 / 4 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="2/3"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="2/3"] {
+  aspect-ratio: 2 / 3 !important;
+}
+
+.prose .blog-editor-image[data-aspect-ratio="9/16"],
+.ProseMirror .blog-editor-image[data-aspect-ratio="9/16"] {
+  aspect-ratio: 9 / 16 !important;
+}
+
+/* Force alignment to work */
+.prose .blog-editor-image[data-align="left"],
+.ProseMirror .blog-editor-image[data-align="left"] {
+  float: left !important;
+  margin-right: 1rem !important;
+  margin-left: 0 !important;
+  clear: left !important;
+}
+
+.prose .blog-editor-image[data-align="right"],
+.ProseMirror .blog-editor-image[data-align="right"] {
+  float: right !important;
+  margin-left: 1rem !important;
+  margin-right: 0 !important;
+  clear: right !important;
+}
+
+.prose .blog-editor-image[data-align="center"],
+.ProseMirror .blog-editor-image[data-align="center"] {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* Force border radius to work */
+.prose .blog-editor-image[data-radius="none"],
+.ProseMirror .blog-editor-image[data-radius="none"] {
+  border-radius: 0px !important;
+}
+
+.prose .blog-editor-image[data-radius="sm"],
+.ProseMirror .blog-editor-image[data-radius="sm"] {
+  border-radius: 0.125rem !important;
+}
+
+.prose .blog-editor-image[data-radius="md"],
+.ProseMirror .blog-editor-image[data-radius="md"] {
+  border-radius: 0.375rem !important;
+}
+
+.prose .blog-editor-image[data-radius="lg"],
+.ProseMirror .blog-editor-image[data-radius="lg"] {
+  border-radius: 0.5rem !important;
+}
+
+.prose .blog-editor-image[data-radius="xl"],
+.ProseMirror .blog-editor-image[data-radius="xl"] {
+  border-radius: 0.75rem !important;
+}
+
+.prose .blog-editor-image[data-radius="full"],
+.ProseMirror .blog-editor-image[data-radius="full"] {
+  border-radius: 9999px !important;
+}
+
+/* Additional class-based overrides */
+.prose .blog-editor-image--align-left,
+.ProseMirror .blog-editor-image--align-left {
+  float: left !important;
+  margin-right: 1rem !important;
+  margin-left: 0 !important;
+}
+
+.prose .blog-editor-image--align-right,
+.ProseMirror .blog-editor-image--align-right {
+  float: right !important;
+  margin-left: 1rem !important;
+  margin-right: 0 !important;
+}
+
+.prose .blog-editor-image--align-center,
+.ProseMirror .blog-editor-image--align-center {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  float: none !important;
+}

@@ -1,0 +1,22 @@
+{
+    "name": "LaIA",
+    "short_name": "LaIA",
+    "description": "Sistema completo de formularios reutilizables basado en shadcn/ui, con validaciones automáticas, localización para España/Catalunya y componentes modernos.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "/cat.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/cat.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "lang": "es"
+}
