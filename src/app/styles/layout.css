@@ -1,0 +1,17 @@
+.sidebar-transition {
+  transition: width 300ms ease;
+}
+
+.sidebar-open {
+  width: 16rem; /* w-64 */
+}
+
+.sidebar-closed {
+  width: 5rem; /* w-20 */
+}
+
+@media (max-width: 1024px) {
+  .sidebar-closed {
+    width: 0;
+  }
+}
