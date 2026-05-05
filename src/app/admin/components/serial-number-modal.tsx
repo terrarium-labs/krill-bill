@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SerialNumber, SerialNumberEntity } from '../../types/serial-numbers';
 import { X } from 'lucide-react';
+import { validatePattern, generateNextDocumentNumber } from '../utils/serial-number-patterns';
 
 interface SerialNumberModalProps {
   open: boolean;
@@ -39,9 +40,12 @@ export default function SerialNumberModal({
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-    if (!formData.value.includes('%')) {
-      newErrors.value = 'Pattern must contain at least one % (for number)';
+
+    const patternValidation = validatePattern(formData.value);
+    if (!patternValidation.valid) {
+      newErrors.value = patternValidation.error || 'Invalid pattern';
     }
+
     if (formData.last_num_value < 0) {
       newErrors.last_num_value = 'Last number must be non-negative';
     }
@@ -145,14 +149,35 @@ export default function SerialNumberModal({
                   ? 'border-red-300 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-green-500'
               }`}
-              placeholder="e.g., SI-2026-%%%%"
+              placeholder="e.g., INV-[YYYY]-%%%%%"
             />
             {errors.value && (
               <p className="text-red-600 text-sm mt-1">{errors.value}</p>
             )}
-            <p className="text-gray-500 text-xs mt-2">
-              Use % for number digits (e.g., SI-2026-%%)
-            </p>
+            
+            {/* Helper text with examples */}
+            <div className="mt-3 p-3 bg-blue-50 rounded-md border border-blue-200">
+              <p className="text-xs font-semibold text-blue-900 mb-2">Pattern Format:</p>
+              <ul className="text-xs text-blue-800 space-y-1 ml-3">
+                <li>• Use <code className="bg-white px-1 rounded">%%%%</code> for number digits (each % = one digit)</li>
+                <li>• Use <code className="bg-white px-1 rounded">[YYYY]</code> for year (2026)</li>
+                <li>• Use <code className="bg-white px-1 rounded">[YY]</code> for short year (26)</li>
+                <li>• Use <code className="bg-white px-1 rounded">[MM]</code> for month (01-12)</li>
+                <li>• Use <code className="bg-white px-1 rounded">[DD]</code> for day (01-31)</li>
+              </ul>
+            </div>
+
+            {/* Real-time preview */}
+            {formData.value && validatePattern(formData.value).valid && (
+              <div className="mt-3 p-3 bg-green-50 rounded-md border border-green-200">
+                <p className="text-xs text-green-700 font-medium mb-1">
+                  Next example (starting from {formData.last_num_value}):
+                </p>
+                <p className="text-sm font-mono font-semibold text-green-900">
+                  {generateNextDocumentNumber(formData.value, formData.last_num_value)}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Last Number */}
