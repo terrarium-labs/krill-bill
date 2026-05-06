@@ -33,6 +33,7 @@ pids
 # IDE and editor files
 .vscode/
 .idea/
+reference-erp-project/
 *.swp
 *.swo
 *~

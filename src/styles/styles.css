@@ -1,15 +1,27 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 transition-colors;
-  }
+:root {
+  color-scheme: light;
+}
 
-  :root {
-    color-scheme: light;
-  }
+body {
+  background-color: white;
+  color: rgb(17, 24, 39);
+  transition-property: background-color, color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 
-  :root.dark {
-    color-scheme: dark;
-  }
+html.dark,
+html.dark body {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: rgb(3, 7, 18);
+  color: rgb(243, 244, 246);
+}
+
+:root.dark {
+  color-scheme: dark;
 }

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { SerialNumber } from '@/types/serial-numbers';
 import { Edit2, Trash2 } from 'lucide-react';
 import { generateNextDocumentNumber } from '@/app/utils/serial-number-patterns';
+import { getColorClasses, getTextColorClasses, getBgColorClasses } from '@/utils/colors';
 
 interface SerialNumbersTableProps {
   data: SerialNumber[];
@@ -54,7 +55,7 @@ export default function SerialNumbersTable({
           <tr key={sn.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
             <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{sn.name}</td>
             <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-              <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
+              <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${getBgColorClasses('blue')} text-blue-700 dark:text-blue-400`}>
                 {sn.entity.replace('_', ' ')}
               </span>
             </td>

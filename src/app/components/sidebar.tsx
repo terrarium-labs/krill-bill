@@ -1,8 +1,6 @@
-import { ChevronLeft, Home, Settings, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, Home, Settings, FileText, Users } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
-import { useState, useRef, useEffect } from 'react';
-import { useApp } from '@/contexts/app-context';
-import { useTheme } from '@/hooks/useTheme';
+import { useState } from 'react';
 import { getTranslation, type Language } from '@/i18n';
 
 interface SidebarProps {
@@ -19,39 +17,23 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'sidebar.dashboard', href: '/', icon: Home },
+  { label: 'sidebar.invoices', href: '/invoices', icon: FileText },
+  { label: 'sidebar.clients', href: '/clients', icon: Users },
   {
     label: 'sidebar.settings',
     icon: Settings,
     children: [
-      { label: 'sidebar.general', href: '/admin/settings' },
-      { label: 'sidebar.serialPatterns', href: '/admin/serial-numbers' },
+      { label: 'sidebar.general', href: '/settings/general' },
+      { label: 'sidebar.serialPatterns', href: '/settings/serial-numbers' },
     ],
   },
 ];
 
 export default function Sidebar({ open, onOpenChange }: SidebarProps) {
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
-  const { language, setLanguage } = useApp();
   const [expandedSettings, setExpandedSettings] = useState(false);
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const languageDropdownRef = useRef<HTMLDivElement>(null);
 
-  const t = (key: string) => getTranslation(language, key);
-
-  // Close language dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
-        setLanguageDropdownOpen(false);
-      }
-    }
-
-    if (languageDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [languageDropdownOpen]);
+  const t = (key: string) => getTranslation('en', key);
 
   const isSettingsActive = location.pathname.startsWith('/admin');
 
@@ -155,61 +137,6 @@ export default function Sidebar({ open, onOpenChange }: SidebarProps) {
             );
           })}
         </nav>
-
-        {/* Theme & Language Controls */}
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          >
-            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-
-          {/* Language Selector */}
-          <div className="relative" ref={languageDropdownRef}>
-            <button
-              onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-              className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-semibold"
-              title={`Current language: ${language === 'en' ? 'English' : 'Español'}`}
-            >
-              {language.toUpperCase()}
-            </button>
-
-            {/* Dropdown menu */}
-            {languageDropdownOpen && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
-                <button
-                  onClick={() => {
-                    setLanguage('en');
-                    setLanguageDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                    language === 'en'
-                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  English
-                </button>
-                <button
-                  onClick={() => {
-                    setLanguage('es');
-                    setLanguageDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                    language === 'es'
-                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  Español
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Footer */}
         <div className="border-t border-gray-200 dark:border-gray-700 p-4">

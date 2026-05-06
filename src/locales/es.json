@@ -1,6 +1,8 @@
 {
   "sidebar": {
     "dashboard": "Panel Principal",
+    "invoices": "Facturas",
+    "clients": "Clientes",
     "settings": "Configuración",
     "general": "General",
     "serialPatterns": "Patrones Seriales"
@@ -35,6 +37,30 @@
       "description": "Configura los ajustes generales de la aplicación",
       "comingSoon": "Próximamente",
       "comingSoonDesc": "La configuración general estará disponible pronto. Esta sección incluirá información comercial, preferencias y otras configuraciones generales."
+    },
+    "invoices": {
+      "title": "Facturas",
+      "description": "Gestiona y realiza un seguimiento de tus facturas",
+      "search": "Buscar facturas...",
+      "newInvoice": "Nueva Factura",
+      "createInvoice": "Crear Factura",
+      "noInvoices": "Sin facturas aún",
+      "createFirstInvoice": "Comienza creando tu primera factura para comenzar a rastrear tus ventas",
+      "totalInvoices": "Total de Facturas",
+      "totalAmount": "Monto Total",
+      "pending": "Pendiente"
+    },
+    "clients": {
+      "title": "Clientes",
+      "description": "Gestiona tu base de datos de clientes",
+      "search": "Buscar clientes...",
+      "newClient": "Nuevo Cliente",
+      "addClient": "Agregar Cliente",
+      "noClients": "Sin clientes aún",
+      "addFirstClient": "Comienza agregando tu primer cliente a tu base de datos",
+      "totalClients": "Total de Clientes",
+      "totalRevenue": "Ingresos Totales",
+      "activeContracts": "Contratos Activos"
     }
   },
   "modals": {

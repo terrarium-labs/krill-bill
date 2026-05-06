@@ -1,6 +1,8 @@
 {
   "sidebar": {
     "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "clients": "Clients",
     "settings": "Settings",
     "general": "General",
     "serialPatterns": "Serial Patterns"
@@ -35,6 +37,30 @@
       "description": "Configure general application settings",
       "comingSoon": "Coming Soon",
       "comingSoonDesc": "General settings will be available soon. This section will include business information, preferences, and other general configurations."
+    },
+    "invoices": {
+      "title": "Invoices",
+      "description": "Manage and track your invoices",
+      "search": "Search invoices...",
+      "newInvoice": "New Invoice",
+      "createInvoice": "Create Invoice",
+      "noInvoices": "No invoices yet",
+      "createFirstInvoice": "Start by creating your first invoice to begin tracking your sales",
+      "totalInvoices": "Total Invoices",
+      "totalAmount": "Total Amount",
+      "pending": "Pending"
+    },
+    "clients": {
+      "title": "Clients",
+      "description": "Manage your client database",
+      "search": "Search clients...",
+      "newClient": "New Client",
+      "addClient": "Add Client",
+      "noClients": "No clients yet",
+      "addFirstClient": "Start by adding your first client to your database",
+      "totalClients": "Total Clients",
+      "totalRevenue": "Total Revenue",
+      "activeContracts": "Active Contracts"
     }
   },
   "modals": {

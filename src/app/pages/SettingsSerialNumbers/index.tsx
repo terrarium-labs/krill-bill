@@ -6,6 +6,7 @@ import PageHeader from '@/app/components/page-header';
 import SerialNumbersTable from './components/serial-numbers-table';
 import SerialNumberModal from './components/serial-number-modal';
 import { SerialNumber } from '@/types/serial-numbers';
+import { getBgColorClasses } from '@/utils/colors';
 
 // Mock API functions (replace with real API calls)
 const mockSerialNumbers: SerialNumber[] = [

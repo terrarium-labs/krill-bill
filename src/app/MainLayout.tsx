@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Outlet } from 'react-router';
 import Sidebar from '@/app/components/sidebar';
 import Header from '@/app/components/header';
-import { useTheme } from '@/hooks/useTheme';
+import { useApp } from '@/contexts/app-context';
 import '@/app/styles/layout.css';
 
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { theme } = useTheme();
+  const { theme } = useApp();
 
   return (
     <div className="flex h-screen w-full bg-white dark:bg-gray-950">
