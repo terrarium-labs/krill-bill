@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router';
-import Dashboard from './pages/Dashboard';
-import SettingsSerialNumbers from './pages/SettingsSerialNumbers';
-import SettingsGeneral from './pages/SettingsGeneral';
+import Dashboard from '@/app/pages/Dashboard';
+import SettingsSerialNumbers from '@/app/pages/SettingsSerialNumbers';
+import SettingsGeneral from '@/app/pages/SettingsGeneral';
 
 export function AdminRoutes() {
   return (

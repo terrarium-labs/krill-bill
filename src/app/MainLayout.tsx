@@ -1,22 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router';
-import Sidebar from './components/sidebar';
-import Header from './components/header';
-import { useApp } from '../contexts/app-context';
-import './styles/layout.css';
+import Sidebar from '@/app/components/sidebar';
+import Header from '@/app/components/header';
+import { useTheme } from '@/hooks/useTheme';
+import '@/app/styles/layout.css';
 
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { theme } = useApp();
-
-  // Apply theme to document
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+  const { theme } = useTheme();
 
   return (
     <div className="flex h-screen w-full bg-white dark:bg-gray-950">

@@ -1,0 +1,87 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "general": "General",
+    "serialPatterns": "Serial Patterns"
+  },
+  "footer": {
+    "version": "Version"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Welcome to Krill Bill",
+      "subtitle": "Your local-first invoice manager SaaS",
+      "invoicesCreated": "Invoices Created",
+      "totalAmount": "Total Amount",
+      "clients": "Clients",
+      "gettingStarted": "Getting Started",
+      "step1": "✓ Set up serial numbers for your invoices",
+      "step2": "○ Create your first invoice",
+      "step3": "○ Configure clients and vendors",
+      "step4": "○ Enable mail billing automation"
+    },
+    "serialNumbers": {
+      "title": "Serial Numbers",
+      "description": "Manage invoice and document serial number patterns",
+      "search": "Search serial numbers...",
+      "newSerialNumber": "New Serial Number",
+      "loading": "Loading serial numbers...",
+      "noResults": "No serial numbers found",
+      "createFirst": "Create your first serial number to get started"
+    },
+    "settingsGeneral": {
+      "title": "General Settings",
+      "description": "Configure general application settings",
+      "comingSoon": "Coming Soon",
+      "comingSoonDesc": "General settings will be available soon. This section will include business information, preferences, and other general configurations."
+    }
+  },
+  "modals": {
+    "serialNumber": {
+      "createTitle": "Create Serial Number",
+      "editTitle": "Edit Serial Number",
+      "name": "Name",
+      "nameHelp": "e.g., SI, PI, ORD",
+      "entityType": "Entity Type",
+      "pattern": "Pattern",
+      "lastNumberUsed": "Last Number Used",
+      "patternFormat": "Pattern Format:",
+      "nextExample": "Next example (starting from",
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update",
+      "hints": {
+        "digits": "Use %%%% for number digits (each % = one digit)",
+        "year": "Use [YYYY] for year (2026)",
+        "shortYear": "Use [YY] for short year (26)",
+        "month": "Use [MM] for month (01-12)",
+        "day": "Use [DD] for day (01-31)"
+      },
+      "errors": {
+        "nameRequired": "Name is required",
+        "patternInvalid": "Invalid pattern",
+        "lastNumberNegative": "Last number must be non-negative"
+      }
+    }
+  },
+  "table": {
+    "name": "Name",
+    "entity": "Entity",
+    "pattern": "Pattern",
+    "nextNumber": "Next Number",
+    "actions": "Actions"
+  },
+  "buttons": {
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "toasts": {
+    "serialNumberCreated": "Serial number created successfully",
+    "serialNumberUpdated": "Serial number updated successfully",
+    "serialNumberDeleted": "Serial number deleted successfully"
+  }
+}
