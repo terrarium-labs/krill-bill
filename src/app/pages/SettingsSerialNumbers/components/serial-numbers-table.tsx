@@ -1,6 +1,7 @@
-import { SerialNumber } from '../../types/serial-numbers';
+import { useTranslation } from 'react-i18next';
+import { SerialNumber } from '@/types/serial-numbers';
 import { Edit2, Trash2 } from 'lucide-react';
-import { generateNextDocumentNumber } from '../../../utils/serial-number-patterns';
+import { generateNextDocumentNumber } from '@/app/utils/serial-number-patterns';
 
 interface SerialNumbersTableProps {
   data: SerialNumber[];
@@ -13,14 +14,16 @@ export default function SerialNumbersTable({
   onEdit,
   onDelete,
 }: SerialNumbersTableProps) {
+  const { t } = useTranslation();
+
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <div className="text-6xl mb-4">📋</div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          No serial numbers found
+          {t('pages.serialNumbers.noResults')}
         </h3>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Create your first serial number to get started</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">{t('pages.serialNumbers.createFirst')}</p>
       </div>
     );
   }
@@ -30,19 +33,19 @@ export default function SerialNumbersTable({
       <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <tr>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-            Name
+            {t('table.name')}
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-            Entity
+            {t('table.entity')}
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-            Pattern
+            {t('table.pattern')}
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-            Next Number
+            {t('table.nextNumber')}
           </th>
           <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-            Actions
+            {t('table.actions')}
           </th>
         </tr>
       </thead>

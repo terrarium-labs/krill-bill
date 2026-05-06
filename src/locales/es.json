@@ -1,0 +1,87 @@
+{
+  "sidebar": {
+    "dashboard": "Panel Principal",
+    "settings": "Configuración",
+    "general": "General",
+    "serialPatterns": "Patrones Seriales"
+  },
+  "footer": {
+    "version": "Versión"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Bienvenido a Krill Bill",
+      "subtitle": "Tu gestor de facturas local-first SaaS",
+      "invoicesCreated": "Facturas Creadas",
+      "totalAmount": "Monto Total",
+      "clients": "Clientes",
+      "gettingStarted": "Primeros Pasos",
+      "step1": "✓ Configurar números de serie para tus facturas",
+      "step2": "○ Crear tu primera factura",
+      "step3": "○ Configurar clientes y proveedores",
+      "step4": "○ Habilitar automatización de facturación por correo"
+    },
+    "serialNumbers": {
+      "title": "Números de Serie",
+      "description": "Gestionar patrones de números de serie para facturas y documentos",
+      "search": "Buscar números de serie...",
+      "newSerialNumber": "Nuevo Número de Serie",
+      "loading": "Cargando números de serie...",
+      "noResults": "No se encontraron números de serie",
+      "createFirst": "Crea tu primer número de serie para comenzar"
+    },
+    "settingsGeneral": {
+      "title": "Configuración General",
+      "description": "Configura los ajustes generales de la aplicación",
+      "comingSoon": "Próximamente",
+      "comingSoonDesc": "La configuración general estará disponible pronto. Esta sección incluirá información comercial, preferencias y otras configuraciones generales."
+    }
+  },
+  "modals": {
+    "serialNumber": {
+      "createTitle": "Crear Número de Serie",
+      "editTitle": "Editar Número de Serie",
+      "name": "Nombre",
+      "nameHelp": "p. ej., SI, PI, ORD",
+      "entityType": "Tipo de Entidad",
+      "pattern": "Patrón",
+      "lastNumberUsed": "Último Número Utilizado",
+      "patternFormat": "Formato de Patrón:",
+      "nextExample": "Próximo ejemplo (comenzando desde",
+      "cancel": "Cancelar",
+      "create": "Crear",
+      "update": "Actualizar",
+      "hints": {
+        "digits": "Usa %%%% para dígitos numéricos (cada % = un dígito)",
+        "year": "Usa [YYYY] para el año (2026)",
+        "shortYear": "Usa [YY] para año corto (26)",
+        "month": "Usa [MM] para mes (01-12)",
+        "day": "Usa [DD] para día (01-31)"
+      },
+      "errors": {
+        "nameRequired": "El nombre es obligatorio",
+        "patternInvalid": "Patrón inválido",
+        "lastNumberNegative": "El último número debe ser no negativo"
+      }
+    }
+  },
+  "table": {
+    "name": "Nombre",
+    "entity": "Entidad",
+    "pattern": "Patrón",
+    "nextNumber": "Próximo Número",
+    "actions": "Acciones"
+  },
+  "buttons": {
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  },
+  "toasts": {
+    "serialNumberCreated": "Número de serie creado exitosamente",
+    "serialNumberUpdated": "Número de serie actualizado exitosamente",
+    "serialNumberDeleted": "Número de serie eliminado exitosamente"
+  }
+}

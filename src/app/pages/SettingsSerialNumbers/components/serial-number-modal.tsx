@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { SerialNumber, SerialNumberEntity } from '../../types/serial-numbers';
+import { useTranslation } from 'react-i18next';
+import { SerialNumber, SerialNumberEntity } from '@/types/serial-numbers';
 import { X } from 'lucide-react';
-import { validatePattern, generateNextDocumentNumber } from '../../../utils/serial-number-patterns';
+import { validatePattern, generateNextDocumentNumber } from '@/app/utils/serial-number-patterns';
 
 interface SerialNumberModalProps {
   open: boolean;
@@ -24,6 +25,7 @@ export default function SerialNumberModal({
   initialData,
   mode,
 }: SerialNumberModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Omit<SerialNumber, 'id'>>({
     entity: initialData?.entity || 'sales_invoices',
     name: initialData?.name || '',
@@ -38,16 +40,16 @@ export default function SerialNumberModal({
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = t('modals.serialNumber.errors.nameRequired');
     }
 
     const patternValidation = validatePattern(formData.value);
     if (!patternValidation.valid) {
-      newErrors.value = patternValidation.error || 'Invalid pattern';
+      newErrors.value = patternValidation.error || t('modals.serialNumber.errors.patternInvalid');
     }
 
     if (formData.last_num_value < 0) {
-      newErrors.last_num_value = 'Last number must be non-negative';
+      newErrors.last_num_value = t('modals.serialNumber.errors.lastNumberNegative');
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -74,8 +76,8 @@ export default function SerialNumberModal({
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {mode === 'create'
-              ? 'Create Serial Number'
-              : 'Edit Serial Number'}
+              ? t('modals.serialNumber.createTitle')
+              : t('modals.serialNumber.editTitle')}
           </h2>
           <button
             onClick={() => onOpenChange(false)}
@@ -90,7 +92,7 @@ export default function SerialNumberModal({
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Name
+              {t('modals.serialNumber.name')}
             </label>
             <input
               type="text"
@@ -103,7 +105,7 @@ export default function SerialNumberModal({
                   ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
                   : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
               }`}
-              placeholder="e.g., SI, PI, ORD"
+              placeholder={t('modals.serialNumber.nameHelp')}
             />
             {errors.name && (
               <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name}</p>
@@ -113,7 +115,7 @@ export default function SerialNumberModal({
           {/* Entity */}
           <div>
             <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Entity Type
+              {t('modals.serialNumber.entityType')}
             </label>
             <select
               value={formData.entity}
@@ -136,7 +138,7 @@ export default function SerialNumberModal({
           {/* Pattern Value */}
           <div>
             <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Pattern
+              {t('modals.serialNumber.pattern')}
             </label>
             <input
               type="text"
@@ -157,13 +159,13 @@ export default function SerialNumberModal({
             
             {/* Helper text with examples */}
             <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
-              <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-2">Pattern Format:</p>
+              <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-2">{t('modals.serialNumber.patternFormat')}</p>
               <ul className="text-xs text-blue-800 dark:text-blue-300 space-y-1 ml-3">
-                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">%%%%</code> for number digits (each % = one digit)</li>
-                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[YYYY]</code> for year (2026)</li>
-                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[YY]</code> for short year (26)</li>
-                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[MM]</code> for month (01-12)</li>
-                <li>• Use <code className="bg-white dark:bg-gray-800 px-1 rounded">[DD]</code> for day (01-31)</li>
+                <li>• {t('modals.serialNumber.hints.digits')}</li>
+                <li>• {t('modals.serialNumber.hints.year')}</li>
+                <li>• {t('modals.serialNumber.hints.shortYear')}</li>
+                <li>• {t('modals.serialNumber.hints.month')}</li>
+                <li>• {t('modals.serialNumber.hints.day')}</li>
               </ul>
             </div>
 
@@ -171,7 +173,7 @@ export default function SerialNumberModal({
             {formData.value && validatePattern(formData.value).valid && (
               <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
                 <p className="text-xs text-green-700 dark:text-green-300 font-medium mb-1">
-                  Next example (starting from {formData.last_num_value}):
+                  {t('modals.serialNumber.nextExample')} {formData.last_num_value}):
                 </p>
                 <p className="text-sm font-mono font-semibold text-green-900 dark:text-green-200">
                   {generateNextDocumentNumber(formData.value, formData.last_num_value)}
@@ -183,7 +185,7 @@ export default function SerialNumberModal({
           {/* Last Number */}
           <div>
             <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Last Number Used
+              {t('modals.serialNumber.lastNumberUsed')}
             </label>
             <input
               type="number"
@@ -215,13 +217,13 @@ export default function SerialNumberModal({
               onClick={() => onOpenChange(false)}
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Cancel
+              {t('buttons.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
             >
-              {mode === 'create' ? 'Create' : 'Update'}
+              {mode === 'create' ? t('modals.serialNumber.create') : t('modals.serialNumber.update')}
             </button>
           </div>
         </form>

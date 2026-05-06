@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router';
-import MainLayout from './app/MainLayout';
-import AppRoutes from './app/AppRoutes';
-import { AppProvider } from './contexts/app-context';
+import MainLayout from '@/app/MainLayout';
+import AppRoutes from '@/app/AppRoutes';
+import { AppProvider } from '@/contexts/app-context';
 import { Toaster } from 'sonner';
 
 function App() {

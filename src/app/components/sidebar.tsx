@@ -1,8 +1,9 @@
 import { ChevronLeft, Home, Settings, Sun, Moon } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
-import { useState } from 'react';
-import { useApp } from '../../contexts/app-context';
-import { getTranslation, type Language } from '../../i18n';
+import { useState, useRef, useEffect } from 'react';
+import { useApp } from '@/contexts/app-context';
+import { useTheme } from '@/hooks/useTheme';
+import { getTranslation, type Language } from '@/i18n';
 
 interface SidebarProps {
   open: boolean;
@@ -30,10 +31,27 @@ const navItems: NavItem[] = [
 
 export default function Sidebar({ open, onOpenChange }: SidebarProps) {
   const location = useLocation();
-  const { theme, setTheme, language, setLanguage } = useApp();
+  const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage } = useApp();
   const [expandedSettings, setExpandedSettings] = useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const languageDropdownRef = useRef<HTMLDivElement>(null);
 
   const t = (key: string) => getTranslation(language, key);
+
+  // Close language dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
+        setLanguageDropdownOpen(false);
+      }
+    }
+
+    if (languageDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [languageDropdownOpen]);
 
   const isSettingsActive = location.pathname.startsWith('/admin');
 
@@ -142,7 +160,7 @@ export default function Sidebar({ open, onOpenChange }: SidebarProps) {
         <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-2">
           {/* Theme Toggle */}
           <button
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            onClick={toggleTheme}
             className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
           >
@@ -150,13 +168,47 @@ export default function Sidebar({ open, onOpenChange }: SidebarProps) {
           </button>
 
           {/* Language Selector */}
-          <button
-            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-            className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-semibold"
-            title={`Switch to ${language === 'en' ? 'Spanish' : 'English'}`}
-          >
-            {language.toUpperCase()}
-          </button>
+          <div className="relative" ref={languageDropdownRef}>
+            <button
+              onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+              className="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm font-semibold"
+              title={`Current language: ${language === 'en' ? 'English' : 'Español'}`}
+            >
+              {language.toUpperCase()}
+            </button>
+
+            {/* Dropdown menu */}
+            {languageDropdownOpen && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+                <button
+                  onClick={() => {
+                    setLanguage('en');
+                    setLanguageDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                    language === 'en'
+                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => {
+                    setLanguage('es');
+                    setLanguageDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                    language === 'es'
+                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Español
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}
