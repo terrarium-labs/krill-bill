@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SerialNumber, SerialNumberEntity } from '../../types/serial-numbers';
 import { X } from 'lucide-react';
-import { validatePattern, generateNextDocumentNumber } from '../utils/serial-number-patterns';
+import { validatePattern, generateNextDocumentNumber } from '../../../utils/serial-number-patterns';
 
 interface SerialNumberModalProps {
   open: boolean;

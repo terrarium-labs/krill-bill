@@ -1,6 +1,6 @@
 import { SerialNumber } from '../../types/serial-numbers';
 import { Edit2, Trash2 } from 'lucide-react';
-import { generateNextDocumentNumber } from '../utils/serial-number-patterns';
+import { generateNextDocumentNumber } from '../../../utils/serial-number-patterns';
 
 interface SerialNumbersTableProps {
   data: SerialNumber[];

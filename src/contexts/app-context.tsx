@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import type { Language } from './i18n';
+import type { Language } from '../i18n';
 
 interface AppContextType {
   theme: 'light' | 'dark';
