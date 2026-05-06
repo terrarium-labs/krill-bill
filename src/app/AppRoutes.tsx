@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router';
-import Dashboard from './Dashboard';
+import Dashboard from './pages/Dashboard';
 import AdminRoutes from './admin/AdminRoutes';
 
 export default function AppRoutes() {

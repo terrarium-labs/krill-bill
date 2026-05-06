@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit2, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import PageHeader from '../components/page-header';
-import SerialNumbersTable from './components/serial-numbers-table';
-import SerialNumberModal from './components/serial-number-modal';
-import { SerialNumber } from '../../types/serial-numbers';
+import PageHeader from '../../components/page-header';
+import SerialNumbersTable from '../../admin/components/serial-numbers-table';
+import SerialNumberModal from '../../admin/components/serial-number-modal';
+import { SerialNumber } from '../../../types/serial-numbers';
 
 // Mock API functions (replace with real API calls)
 const mockSerialNumbers: SerialNumber[] = [
@@ -24,7 +24,7 @@ const mockSerialNumbers: SerialNumber[] = [
   },
 ];
 
-export default function SerialNumbersPage() {
+export default function SettingsSerialNumbers() {
   const [serialNumbers, setSerialNumbers] = useState<SerialNumber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
