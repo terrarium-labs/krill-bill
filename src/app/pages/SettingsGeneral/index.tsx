@@ -4,11 +4,13 @@ import { Sun, Moon, Monitor } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import PageHeader from '@/app/components/page-header';
 import { useApp } from '@/contexts/app-context';
+import { useTheme } from '@/components/theme-provider';
 import { getBgColorClasses } from '@/utils/colors';
 
 export default function SettingsGeneral() {
   const { t } = useTranslation();
-  const { theme, setTheme, language, setLanguage } = useApp();
+  const { theme, setTheme } = useTheme();
+  const { language, setLanguage } = useApp();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const [businessData, setBusinessData] = useState({
     businessName: '',
