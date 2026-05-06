@@ -1,11 +1,12 @@
 import { Routes, Route } from 'react-router';
-import SerialNumbersPage from './SerialNumbersPage';
+import SettingsSerialNumbers from '../pages/SettingsSerialNumbers';
+import SettingsGeneral from '../pages/SettingsGeneral';
 
 export default function AdminRoutes() {
   return (
     <Routes>
-      <Route path="serial-numbers" element={<SerialNumbersPage />} />
-      <Route path="settings" element={<div>Settings Page</div>} />
+      <Route path="serial-numbers" element={<SettingsSerialNumbers />} />
+      <Route path="settings" element={<SettingsGeneral />} />
     </Routes>
   );
 }
