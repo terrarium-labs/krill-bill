@@ -1,164 +1,221 @@
-import { useState } from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
-interface ClientModalProps {
+/**
+ * Props for the {@link ClientModal} component.
+ */
+export interface ClientModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onClientCreated?: () => void | Promise<void>;
+  onClose?: () => void;
+  isSubmitting?: boolean;
 }
 
-export default function ClientModal({ open, onOpenChange }: ClientModalProps) {
+/**
+ * Modal for creating a new client.
+ * Uses shadcn Dialog component with form validation.
+ *
+ * @example
+ * ```tsx
+ * <ClientModal
+ *   open={isOpen}
+ *   onOpenChange={setIsOpen}
+ *   onClientCreated={handleSuccess}
+ *   isSubmitting={isLoading}
+ * />
+ * ```
+ */
+export default function ClientModal({
+  open,
+  onOpenChange,
+  onClientCreated,
+  onClose,
+  isSubmitting = false,
+}: ClientModalProps) {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = React.useState({
     name: '',
     email: '',
     phone: '',
     address: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const submitButtonRef = React.useRef<HTMLButtonElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors: Record<string, string> = {};
+  const handleOpenChange = React.useCallback(
+    (next: boolean) => {
+      if (!next) {
+        onClose?.();
+      }
+      onOpenChange(next);
+    },
+    [onClose, onOpenChange]
+  );
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Client name is required';
-    }
+  const handleSubmit = React.useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      const newErrors: Record<string, string> = {};
 
-    if (formData.email && !formData.email.includes('@')) {
-      newErrors.email = 'Please enter a valid email address';
-    }
+      if (!formData.name.trim()) {
+        newErrors.name = t('clients.errors.nameRequired', 'Client name is required');
+      }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+      if (formData.email && !formData.email.includes('@')) {
+        newErrors.email = t('clients.errors.invalidEmail', 'Please enter a valid email address');
+      }
 
-    // TODO: Create client via API
-    toast.success('Client created successfully');
-    setFormData({ name: '', email: '', phone: '', address: '' });
-    setErrors({});
-    onOpenChange(false);
-  };
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+      }
 
-  if (!open) return null;
+      try {
+        // TODO: Create client via API
+        await onClientCreated?.();
+        toast.success(t('clients.createdSuccess', 'Client created successfully'));
+        setFormData({ name: '', email: '', phone: '', address: '' });
+        setErrors({});
+        onClose?.();
+        onOpenChange(false);
+      } catch (error) {
+        toast.error(t('clients.createError', 'Failed to create client'));
+      }
+    },
+    [formData, onClientCreated, t, onClose, onOpenChange]
+  );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg max-w-md w-full mx-4">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Create Client
-          </h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <X size={20} className="text-gray-600 dark:text-gray-400" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          submitButtonRef.current?.focus();
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle>{t('clients.createClient', 'Create Client')}</DialogTitle>
+          <DialogDescription>
+            {t('clients.createClientDescription', 'Add a new client to your system')}
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Client Name
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('common.name', 'Name')}
             </label>
             <input
               type="text"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              disabled={isSubmitting}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-background text-foreground ${
                 errors.name
-                  ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
-                  : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
+                  ? 'border-destructive focus:ring-destructive'
+                  : 'border-border focus:ring-ring'
               }`}
-              placeholder="e.g., Acme Inc."
+              placeholder={t('clients.placeholders.name', 'e.g., Acme Inc.')}
             />
             {errors.name && (
-              <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name}</p>
+              <p className="text-destructive text-sm mt-1">{errors.name}</p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Email
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('common.email', 'Email')}
             </label>
             <input
               type="email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              disabled={isSubmitting}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-background text-foreground ${
                 errors.email
-                  ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
-                  : 'border-gray-300 dark:border-gray-600 focus:ring-green-500'
+                  ? 'border-destructive focus:ring-destructive'
+                  : 'border-border focus:ring-ring'
               }`}
-              placeholder="contact@example.com"
+              placeholder={t('clients.placeholders.email', 'contact@example.com')}
             />
             {errors.email && (
-              <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.email}</p>
+              <p className="text-destructive text-sm mt-1">{errors.email}</p>
             )}
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Phone
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('common.phone', 'Phone')}
             </label>
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="+1 (555) 000-0000"
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              disabled={isSubmitting}
+              className="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder={t('clients.placeholders.phone', '+1 (555) 000-0000')}
             />
           </div>
 
           {/* Address */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              Address
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('common.address', 'Address')}
             </label>
             <textarea
               value={formData.address}
-              onChange={(e) =>
-                setFormData({ ...formData, address: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              disabled={isSubmitting}
+              className="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               rows={2}
-              placeholder="Street address"
+              placeholder={t('clients.placeholders.address', 'Street address')}
             />
           </div>
-
-          {/* Footer */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-            >
-              Create Client
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            {t('common.cancel', 'Cancel')}
+          </Button>
+          <Button
+            ref={submitButtonRef}
+            type="button"
+            variant="theme"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" />
+                {t('common.creating', 'Creating...')}
+              </>
+            ) : (
+              t('common.create', 'Create')
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

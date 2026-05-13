@@ -1,113 +1,268 @@
 {
-  "sidebar": {
-    "dashboard": "Panel Principal",
-    "invoices": "Facturas",
-    "clients": "Clientes",
-    "settings": "Configuración",
-    "general": "General",
-    "serialPatterns": "Patrones Seriales"
-  },
-  "footer": {
-    "version": "Versión"
-  },
-  "pages": {
-    "dashboard": {
-      "title": "Bienvenido a Krill Bill",
-      "subtitle": "Tu gestor de facturas local-first SaaS",
-      "invoicesCreated": "Facturas Creadas",
-      "totalAmount": "Monto Total",
-      "clients": "Clientes",
-      "gettingStarted": "Primeros Pasos",
-      "step1": "✓ Configurar números de serie para tus facturas",
-      "step2": "○ Crear tu primera factura",
-      "step3": "○ Configurar clientes y proveedores",
-      "step4": "○ Habilitar automatización de facturación por correo"
+    "sidebar": {
+        "dashboard": "Panel Principal",
+        "invoices": "Facturas",
+        "clients": "Clientes",
+        "providers": "Proveedores",
+        "settings": "Configuración",
+        "general": "General",
+        "serialPatterns": "Patrones Seriales"
     },
-    "serialNumbers": {
-      "title": "Números de Serie",
-      "description": "Gestionar patrones de números de serie para facturas y documentos",
-      "search": "Buscar números de serie...",
-      "newSerialNumber": "Nuevo Número de Serie",
-      "loading": "Cargando números de serie...",
-      "noResults": "No se encontraron números de serie",
-      "createFirst": "Crea tu primer número de serie para comenzar"
+    "footer": {
+        "version": "Versión"
     },
-    "settingsGeneral": {
-      "title": "Configuración General",
-      "description": "Configura los ajustes generales de la aplicación",
-      "comingSoon": "Próximamente",
-      "comingSoonDesc": "La configuración general estará disponible pronto. Esta sección incluirá información comercial, preferencias y otras configuraciones generales."
+    "pages": {
+        "dashboard": {
+            "title": "Bienvenido a Krill Bill",
+            "subtitle": "Tu gestor de facturas local-first SaaS",
+            "invoicesCreated": "Facturas Creadas",
+            "totalAmount": "Monto Total",
+            "clients": "Clientes",
+            "gettingStarted": "Primeros Pasos",
+            "step1": "✓ Configurar números de serie para tus facturas",
+            "step2": "○ Crear tu primera factura",
+            "step3": "○ Configurar clientes y proveedores",
+            "step4": "○ Habilitar automatización de facturación por correo"
+        },
+        "serialNumbers": {
+            "title": "Números de Serie",
+            "description": "Gestionar patrones de números de serie para facturas y documentos",
+            "search": "Buscar números de serie...",
+            "newSerialNumber": "Nuevo Número de Serie",
+            "loading": "Cargando números de serie...",
+            "noResults": "No se encontraron números de serie",
+            "createFirst": "Crea tu primer número de serie para comenzar"
+        },
+        "settingsGeneral": {
+            "title": "Configuración General",
+            "description": "Configura los ajustes generales de la aplicación",
+            "comingSoon": "Próximamente",
+            "comingSoonDesc": "La configuración general estará disponible pronto. Esta sección incluirá información comercial, preferencias y otras configuraciones generales."
+        },
+        "invoices": {
+            "title": "Facturas",
+            "description": "Gestiona y realiza un seguimiento de tus facturas",
+            "search": "Buscar facturas...",
+            "newInvoice": "Nueva Factura",
+            "createInvoice": "Crear Factura",
+            "noInvoices": "Sin facturas aún",
+            "createFirstInvoice": "Comienza creando tu primera factura para comenzar a rastrear tus ventas",
+            "totalInvoices": "Total de Facturas",
+            "totalAmount": "Monto Total",
+            "pending": "Pendiente"
+        },
+        "clients": {
+            "title": "Clientes",
+            "description": "Gestiona tu base de datos de clientes",
+            "search": "Buscar clientes...",
+            "newClient": "Nuevo Cliente",
+            "addClient": "Agregar Cliente",
+            "noClients": "Sin clientes aún",
+            "addFirstClient": "Comienza agregando tu primer cliente a tu base de datos",
+            "totalClientes": "Total de Clientes",
+            "totalRevenue": "Ingresos Totales",
+            "activeContracts": "Contratos Activos"
+        },
+        "providers": {
+            "title": "Proveedores",
+            "description": "Gestiona tu red de proveedores",
+            "search": "Buscar proveedores...",
+            "newProvider": "Nuevo Proveedor",
+            "noProviders": "Sin proveedores aún",
+            "addFirstProvider": "Comienza agregando tu primer proveedor a tu red",
+            "totalProviders": "Total de Proveedores",
+            "totalSpent": "Total Gastado",
+            "activeContracts": "Contratos Activos"
+        }
     },
-    "invoices": {
-      "title": "Facturas",
-      "description": "Gestiona y realiza un seguimiento de tus facturas",
-      "search": "Buscar facturas...",
-      "newInvoice": "Nueva Factura",
-      "createInvoice": "Crear Factura",
-      "noInvoices": "Sin facturas aún",
-      "createFirstInvoice": "Comienza creando tu primera factura para comenzar a rastrear tus ventas",
-      "totalInvoices": "Total de Facturas",
-      "totalAmount": "Monto Total",
-      "pending": "Pendiente"
+    "modals": {
+        "serialNumber": {
+            "createTitle": "Crear Número de Serie",
+            "editTitle": "Editar Número de Serie",
+            "name": "Nombre",
+            "nameHelp": "p. ej., SI, PI, ORD",
+            "entityType": "Tipo de Entidad",
+            "pattern": "Patrón",
+            "lastNumberUsed": "Último Número Utilizado",
+            "patternFormat": "Formato de Patrón:",
+            "nextExample": "Próximo ejemplo (comenzando desde",
+            "cancel": "Cancelar",
+            "create": "Crear",
+            "update": "Actualizar",
+            "hints": {
+                "digits": "Usa %%%% para dígitos numéricos (cada % = un dígito)",
+                "year": "Usa [YYYY] para el año (2026)",
+                "shortYear": "Usa [YY] para año corto (26)",
+                "month": "Usa [MM] para mes (01-12)",
+                "day": "Usa [DD] para día (01-31)"
+            },
+            "errors": {
+                "nameRequired": "El nombre es obligatorio",
+                "patternInvalid": "Patrón inválido",
+                "lastNumberNegative": "El último número debe ser no negativo"
+            }
+        }
     },
-    "clients": {
-      "title": "Clientes",
-      "description": "Gestiona tu base de datos de clientes",
-      "search": "Buscar clientes...",
-      "newClient": "Nuevo Cliente",
-      "addClient": "Agregar Cliente",
-      "noClients": "Sin clientes aún",
-      "addFirstClient": "Comienza agregando tu primer cliente a tu base de datos",
-      "totalClients": "Total de Clientes",
-      "totalRevenue": "Ingresos Totales",
-      "activeContracts": "Contratos Activos"
+    "table": {
+        "name": "Nombre",
+        "entity": "Entidad",
+        "pattern": "Patrón",
+        "nextNumber": "Próximo Número",
+        "actions": "Acciones"
+    },
+    "buttons": {
+        "save": "Guardar",
+        "delete": "Eliminar",
+        "edit": "Editar",
+        "cancel": "Cancelar",
+        "close": "Cerrar",
+        "light": "Claro",
+        "dark": "Oscuro",
+        "system": "Sistema",
+        "addSerialNumber": "Agregar Número de Serie",
+        "discard": "Descartar",
+        "keepEditing": "Seguir Editando"
+    },
+    "languages": {
+        "current": "Español",
+        "en": "Inglés",
+        "es": "Español"
+    },
+    "toasts": {
+        "serialNumberCreated": "Número de serie creado exitosamente",
+        "serialNumberUpdated": "Número de serie actualizado exitosamente",
+        "serialNumberDeleted": "Número de serie eliminado exitosamente"
+    },
+    "common": {
+        "providerName": "Nombre del Proveedor",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "description": "Descripción",
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando..."
+    },
+    "providers": {
+        "createProvider": "Crear Proveedor",
+        "createProviderDescription": "Agrega un nuevo proveedor a tu red",
+        "placeholders": {
+            "providerName": "p. ej., Acme Supplies",
+            "email": "proveedor@example.com",
+            "phone": "+34 666 00 00 00",
+            "description": "Detalles del proveedor y notas"
+        },
+        "errors": {
+            "providerNameRequired": "El nombre del proveedor es obligatorio",
+            "emailRequired": "El correo electrónico es obligatorio",
+            "emailInvalid": "El correo electrónico debe ser válido"
+        },
+        "createdSuccess": "Proveedor creado exitosamente",
+        "createError": "Error al crear el proveedor"
+    },
+    "settings": {
+        "general": "General",
+        "displayLocalization": "Preferencias de pantalla e idioma",
+        "theme": "Tema",
+        "accentColor": "Color de Acento",
+        "language": "Idioma",
+        "businessInfo": "Información Comercial",
+        "basicBusinessInfo": "Información comercial básica",
+        "businessName": "Nombre del Negocio",
+        "businessNamePlaceholder": "El nombre de tu negocio",
+        "website": "Sitio Web",
+        "websitePlaceholder": "https://example.com",
+        "address": "Dirección",
+        "businessLocation": "Ubicación y dirección del negocio",
+        "addressLine1": "Línea de Dirección 1",
+        "addressLine1Placeholder": "Dirección de la calle",
+        "addressLine2": "Línea de Dirección 2",
+        "addressLine2Placeholder": "Apartamento, suite, unidad, etc.",
+        "city": "Ciudad",
+        "cityPlaceholder": "Ciudad",
+        "postalCode": "Código Postal",
+        "postalCodePlaceholder": "Código postal",
+        "stateProvince": "Estado / Provincia",
+        "stateProvincePlaceholder": "Estado o provincia",
+        "country": "País",
+        "invoiceSettings": "Configuración de Factura",
+        "defaultInvoiceSettings": "Configuración por defecto para facturas",
+        "currency": "Moneda",
+        "defaultDueDays": "Días de Vencimiento Predeterminados",
+        "defaultDueDaysPlaceholder": "30",
+        "defaultPaymentTerms": "Términos de pago predeterminados en días",
+        "saveChanges": "Guardar Cambios"
+    },
+    "countries": {
+        "spain": "España",
+        "france": "Francia",
+        "germany": "Alemania",
+        "italy": "Italia",
+        "portugal": "Portugal",
+        "unitedStates": "Estados Unidos",
+        "mexico": "México",
+        "unitedKingdom": "Reino Unido"
+    },
+    "currencies": {
+        "eur": "EUR - Euro",
+        "usd": "USD - Dólar estadounidense",
+        "gbp": "GBP - Libra Esterlina",
+        "jpy": "JPY - Yen Japonés",
+        "chf": "CHF - Franco Suizo",
+        "cad": "CAD - Dólar Canadiense",
+        "aud": "AUD - Dólar Australiano",
+        "mxn": "MXN - Peso Mexicano"
+    },
+    "chat": {
+        "title": "Chat",
+        "placeholder": "Los mensajes de chat aparecerán aquí",
+        "inputPlaceholder": "Escribe un mensaje..."
+    },
+    "colorPicker": {
+        "title": "Elegir Color de Acento",
+        "description": "Selecciona un color para personalizar el color de acento de tu aplicación para botones, destacados y estados activos.",
+        "done": "Listo",
+        "currentColor": "Color actual: {{color}}",
+        "aria": "Color actual: {{color}}. Haz clic para abrir el selector de color."
+    },
+    "modals": {
+        "serialNumber": {
+            "createTitle": "Crear Número de Serie",
+            "editTitle": "Editar Número de Serie",
+            "name": "Nombre",
+            "nameHelp": "p. ej., SI, PI, ORD",
+            "entityType": "Tipo de Entidad",
+            "pattern": "Patrón",
+            "patternPlaceholder": "p. ej., INV-[YYYY]-%%%%%",
+            "lastNumberUsed": "Último Número Utilizado",
+            "patternFormat": "Formato de Patrón:",
+            "nextExample": "Próximo ejemplo (comenzando desde",
+            "salesInvoices": "Facturas de Venta",
+            "purchaseInvoices": "Facturas de Compra",
+            "orders": "Pedidos",
+            "cancel": "Cancelar",
+            "create": "Crear",
+            "update": "Actualizar",
+            "hints": {
+                "digits": "Usa %%%% para dígitos numéricos (cada % = un dígito)",
+                "year": "Usa [YYYY] para el año (2026)",
+                "shortYear": "Usa [YY] para año corto (26)",
+                "month": "Usa [MM] para mes (01-12)",
+                "day": "Usa [DD] para día (01-31)"
+            },
+            "errors": {
+                "nameRequired": "El nombre es obligatorio",
+                "patternInvalid": "Patrón inválido",
+                "lastNumberNegative": "El último número debe ser no negativo"
+            }
+        },
+        "unsavedChanges": {
+            "title": "Cambios sin Guardar",
+            "description": "Tienes cambios sin guardar. ¿Estás seguro de que deseas irte sin guardar?",
+            "keepEditing": "Seguir Editando",
+            "discard": "Descartar"
+        }
+    },
+    "accessibility": {
+        "openMenu": "Abrir menú"
     }
-  },
-  "modals": {
-    "serialNumber": {
-      "createTitle": "Crear Número de Serie",
-      "editTitle": "Editar Número de Serie",
-      "name": "Nombre",
-      "nameHelp": "p. ej., SI, PI, ORD",
-      "entityType": "Tipo de Entidad",
-      "pattern": "Patrón",
-      "lastNumberUsed": "Último Número Utilizado",
-      "patternFormat": "Formato de Patrón:",
-      "nextExample": "Próximo ejemplo (comenzando desde",
-      "cancel": "Cancelar",
-      "create": "Crear",
-      "update": "Actualizar",
-      "hints": {
-        "digits": "Usa %%%% para dígitos numéricos (cada % = un dígito)",
-        "year": "Usa [YYYY] para el año (2026)",
-        "shortYear": "Usa [YY] para año corto (26)",
-        "month": "Usa [MM] para mes (01-12)",
-        "day": "Usa [DD] para día (01-31)"
-      },
-      "errors": {
-        "nameRequired": "El nombre es obligatorio",
-        "patternInvalid": "Patrón inválido",
-        "lastNumberNegative": "El último número debe ser no negativo"
-      }
-    }
-  },
-  "table": {
-    "name": "Nombre",
-    "entity": "Entidad",
-    "pattern": "Patrón",
-    "nextNumber": "Próximo Número",
-    "actions": "Acciones"
-  },
-  "buttons": {
-    "save": "Guardar",
-    "delete": "Eliminar",
-    "edit": "Editar",
-    "cancel": "Cancelar",
-    "close": "Cerrar"
-  },
-  "toasts": {
-    "serialNumberCreated": "Número de serie creado exitosamente",
-    "serialNumberUpdated": "Número de serie actualizado exitosamente",
-    "serialNumberDeleted": "Número de serie eliminado exitosamente"
-  }
 }

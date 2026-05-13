@@ -1,15 +1,16 @@
 import { Routes, Route } from 'react-router';
-import Dashboard from '@/app/pages/Dashboard';
-import Invoices from '@/app/pages/Invoices';
-import Clients from '@/app/pages/Clients';
-import SettingsSerialNumbers from '@/app/pages/SettingsSerialNumbers';
-import SettingsGeneral from '@/app/pages/SettingsGeneral';
+import DashboardPage from '@/app/pages/DashboardPage';
+import InvoicesPage from '@/app/pages/InvoicesPage';
+import ClientsPage from '@/app/pages/ClientsPage';
+import SettingsSerialNumbersPage from '@/app/pages/SettingsSerialNumbersPage';
+import SettingsGeneralPage from '@/app/pages/SettingsGeneralPage';
+import ProvidersPage from './pages/ProvidersPage';
 
 export function SettingsRoutes() {
   return (
     <Routes>
-      <Route path="serial-numbers" element={<SettingsSerialNumbers />} />
-      <Route path="general" element={<SettingsGeneral />} />
+      <Route path="serial-numbers" element={<SettingsSerialNumbersPage />} />
+      <Route path="general" element={<SettingsGeneralPage />} />
     </Routes>
   );
 }
@@ -18,9 +19,10 @@ export function SettingsRoutes() {
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route index element={<Dashboard />} />
-      <Route path="invoices" element={<Invoices />} />
-      <Route path="clients" element={<Clients />} />
+      <Route index element={<DashboardPage />} />
+      <Route path="invoices" element={<InvoicesPage />} />
+      <Route path="clients" element={<ClientsPage />} />
+      <Route path="providers" element={<ProvidersPage />} />
       <Route path="settings/*" element={<SettingsRoutes />} />
     </Routes>
   );
