@@ -1,4 +1,37 @@
 {
+    "auth": {
+        "welcomeBack": "Bienvenido de nuevo",
+        "loginToAccount": "Inicia sesión en tu cuenta para continuar",
+        "createAccountTitle": "Crear cuenta",
+        "createAccountSubtitle": "Crea tu cuenta para continuar",
+        "loginWithGoogle": "Iniciar sesión con Google",
+        "loginWithMicrosoft": "Iniciar sesión con Microsoft",
+        "signUpWithGoogle": "Registrarse con Google",
+        "signUpWithMicrosoft": "Registrarse con Microsoft",
+        "orContinueWithEmail": "O continúa con correo electrónico",
+        "email": "Correo electrónico",
+        "emailPlaceholder": "nombre@ejemplo.com",
+        "password": "Contraseña",
+        "passwordPlaceholder": "Ingresa tu contraseña",
+        "confirmPassword": "Confirmar contraseña",
+        "confirmPasswordPlaceholder": "Confirma tu contraseña",
+        "passwordsDontMatch": "Las contraseñas no coinciden",
+        "accountCreated": "Cuenta creada exitosamente",
+        "signin": "Iniciar sesión",
+        "signup": "Registrarse",
+        "forgotPassword": "¿Olvidaste tu contraseña?",
+        "resetPasswordTitle": "Restablecer contraseña",
+        "resetPasswordSubtitle": "Ingresa tu correo para recibir un enlace para restablecer tu contraseña",
+        "sendResetLink": "Enviar enlace de restablecimiento",
+        "backToLogin": "Volver a iniciar sesión",
+        "password_changed": "Contraseña cambiada exitosamente",
+        "recoverPasswordTitle": "Recuperar contraseña",
+        "recoverPasswordSubtitle": "Ingresa tu correo para recuperar tu cuenta",
+        "sendRecoveryLink": "Enviar enlace de recuperación",
+        "haveAccount": "¿Tienes una cuenta?",
+        "dontHaveAccount": "¿No tienes una cuenta?",
+        "loading": "Cargando..."
+    },
     "sidebar": {
         "dashboard": "Panel Principal",
         "invoices": "Facturas",
@@ -6,12 +39,25 @@
         "providers": "Proveedores",
         "settings": "Configuración",
         "general": "General",
+        "profile": "Perfil",
         "serialPatterns": "Patrones Seriales"
     },
     "footer": {
         "version": "Versión"
     },
     "pages": {
+        "selectOrganization": {
+            "title": "Seleccionar Organización",
+            "description": "Elige una organización para administrar",
+            "createNew": "Crear Organización",
+            "createDescription": "Ingresa el nombre de tu nueva organización",
+            "noOrgs": "Sin Organizaciones",
+            "createFirstOrg": "Crea tu primera organización para comenzar"
+        },
+        "settingsProfile": {
+            "title": "Configuración de Perfil",
+            "description": "Personaliza tus preferencias personales"
+        },
         "dashboard": {
             "title": "Bienvenido a Krill Bill",
             "subtitle": "Tu gestor de facturas local-first SaaS",
@@ -123,6 +169,18 @@
         "discard": "Descartar",
         "keepEditing": "Seguir Editando"
     },
+    "actions": {
+        "save": "Guardar Configuración",
+        "saving": "Guardando...",
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "creating": "Creando...",
+        "logout": "Cerrar Sesión"
+    },
+    "form": {
+        "organizationName": "Nombre de la Organización",
+        "organizationNamePlaceholder": "Mi Empresa"
+    },
     "languages": {
         "current": "Español",
         "en": "Inglés",
@@ -131,7 +189,17 @@
     "toasts": {
         "serialNumberCreated": "Número de serie creado exitosamente",
         "serialNumberUpdated": "Número de serie actualizado exitosamente",
-        "serialNumberDeleted": "Número de serie eliminado exitosamente"
+        "serialNumberDeleted": "Número de serie eliminado exitosamente",
+        "settingsSaved": "Configuración guardada exitosamente",
+        "loggedOut": "Sesión cerrada exitosamente",
+        "organizationCreated": "Organización creada exitosamente"
+    },
+    "errors": {
+        "logout": "Error al cerrar sesión",
+        "organizationNameRequired": "El nombre de la organización es obligatorio",
+        "creatingOrganization": "Error al crear la organización",
+        "loadingOrganizations": "Error al cargar las organizaciones",
+        "savingSettings": "Error al guardar la configuración"
     },
     "common": {
         "providerName": "Nombre del Proveedor",
@@ -140,7 +208,10 @@
         "description": "Descripción",
         "cancel": "Cancelar",
         "create": "Crear",
-        "creating": "Creando..."
+        "creating": "Creando...",
+        "saving": "Guardando...",
+        "loading": "Cargando...",
+        "confirmDelete": "¿Estás seguro?"
     },
     "providers": {
         "createProvider": "Crear Proveedor",
@@ -162,9 +233,23 @@
     "settings": {
         "general": "General",
         "displayLocalization": "Preferencias de pantalla e idioma",
-        "theme": "Tema",
-        "accentColor": "Color de Acento",
-        "language": "Idioma",
+        "theme": {
+            "title": "Tema",
+            "description": "Elige tu tema de color preferido",
+            "light": "Claro",
+            "dark": "Oscuro",
+            "system": "Sistema"
+        },
+        "accentColor": {
+            "title": "Color de Acento",
+            "description": "Elige tu color de acento"
+        },
+        "language": {
+            "title": "Idioma",
+            "description": "Selecciona tu idioma preferido",
+            "english": "English",
+            "spanish": "Español"
+        },
         "businessInfo": "Información Comercial",
         "basicBusinessInfo": "Información comercial básica",
         "businessName": "Nombre del Negocio",
@@ -264,5 +349,13 @@
     },
     "accessibility": {
         "openMenu": "Abrir menú"
+    },
+    "errorBoundary": {
+        "title": "Algo salió mal",
+        "description": "Ocurrió un error inesperado. Por favor intenta actualizar la página.",
+        "reload": "Recargar página",
+        "tryAgain": "Intentar de nuevo",
+        "showDetails": "Mostrar detalles",
+        "hideDetails": "Ocultar detalles"
     }
 }

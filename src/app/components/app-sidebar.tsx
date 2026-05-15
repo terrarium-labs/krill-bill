@@ -1,13 +1,12 @@
 import { ChevronRight, Home, Settings, FileText, Users, Boxes } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useState } from 'react';
-import { getTranslation } from '@/i18n';
+import { useTranslation } from 'react-i18next';
 import { getAccentBgSoftClasses, getAccentTextSoftClasses } from '@/app/utils/colors';
 import { useSidebar } from '@/components/ui/sidebar';
 import {
     Tooltip,
     TooltipTrigger,
-    TooltipContent,
 } from '@/components/ui/tooltip';
 import CustomDropdownMenu from './dropdown-menu';
 
@@ -19,7 +18,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    { label: 'sidebar.dashboard', href: '/', icon: Home },
+    { label: 'sidebar.dashboard', href: '/dashboard', icon: Home },
     { label: 'sidebar.invoices', href: '/invoices', icon: FileText },
     { label: 'sidebar.clients', href: '/clients', icon: Users },
     { label: 'sidebar.providers', href: '/providers', icon: Boxes },
@@ -27,6 +26,7 @@ const navItems: NavItem[] = [
         label: 'sidebar.settings',
         icon: Settings,
         children: [
+            { label: 'sidebar.profile', href: '/settings/profile' },
             { label: 'sidebar.general', href: '/settings/general' },
             { label: 'sidebar.serialPatterns', href: '/settings/serial-numbers' },
         ],
@@ -38,8 +38,7 @@ export function AppSidebar() {
     const navigate = useNavigate();
     const [expandedSettings, setExpandedSettings] = useState(false);
     const { open } = useSidebar();
-
-    const t = (key: string) => getTranslation('en', key);
+    const { t } = useTranslation();
 
     const isActive = (href?: string) => {
         if (!href) return false;

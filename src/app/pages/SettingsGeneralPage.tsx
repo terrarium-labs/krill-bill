@@ -1,148 +1,96 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sun, Moon, Monitor } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import PageHeader from '@/app/components/page-header';
-import { ColorPicker } from '@/app/components/color-picker';
-import { useApp } from '@/contexts/app-context';
-import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
-import CustomDropdownMenu from '@/app/components/dropdown-menu';
-import LanguageButton from '@/app/components/buttons/language-button';
+import { useOrg } from '@/contexts/OrgContext';
+import { updateOrganization } from '@/api/organizations';
+import { updateOrgMemberPreferences } from '@/api/org-members';
+import { Organization } from '@/types/organization';
 
 export default function SettingsGeneralPage() {
   const { t } = useTranslation();
-  const { theme, setTheme } = useTheme();
-  const { language, setLanguage, accentColor, setAccentColor } = useApp();
-  const [businessData, setBusinessData] = useState({
-    businessName: '',
-    email: '',
-    phone: '',
-    website: '',
-    currency: 'EUR',
-    defaultDueDays: 30,
-    addressLine1: '',
-    addressLine2: '',
-    city: '',
-    postalCode: '',
-    state: '',
-    country: 'ES',
-  });
+  const { org, preferences, refreshPreferences, refreshOrg } = useOrg();
+  const [isSaving, setIsSaving] = useState(false);
+  const [orgData, setOrgData] = useState<Partial<Organization>>({});
+  const [userLanguage, setUserLanguage] = useState('en');
+
+  // Initialize form with org data
+  useEffect(() => {
+    if (org) {
+      setOrgData({
+        business_name: org.business_name || '',
+        business_email: org.business_email || '',
+        business_phone: org.business_phone || '',
+        business_website: org.business_website || '',
+        currency: org.currency || 'EUR',
+        address_line_1: org.address_line_1 || '',
+        address_line_2: org.address_line_2 || '',
+        city: org.city || '',
+        postal_code: org.postal_code || '',
+        state: org.state || '',
+        country: org.country || 'ES',
+      });
+    }
+    if (preferences) {
+      setUserLanguage(preferences.language || 'en');
+    }
+  }, [org, preferences]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setBusinessData(prev => ({
+    setOrgData(prev => ({
       ...prev,
-      [name]: name === 'defaultDueDays' ? parseInt(value) || 0 : value,
+      [name]: value,
     }));
+  };
+
+  const handleSave = async () => {
+    if (!org) {
+      toast.error('Organization not loaded');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { error } = await updateOrganization(org.id, orgData);
+
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      // Save language preference to org_members
+      if (preferences) {
+        const { error: prefError } = await updateOrgMemberPreferences(org.id, preferences.user_id, {
+          language: userLanguage,
+        });
+        if (prefError) {
+          console.error('Error saving language preference:', prefError);
+        }
+      }
+
+      await refreshOrg();
+      await refreshPreferences();
+      toast.success(t('toasts.settingsSaved', 'Settings saved successfully'));
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error(t('errors.savingSettings', 'Failed to save settings'));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={t('pages.settingsGeneral.title', 'General Settings')}
-        description={t('pages.settingsGeneral.description', 'Configure general application settings')}
+        description={t('pages.settingsGeneral.description', 'Configure your organization settings')}
       />
 
-      {/* General Settings Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 py-6">
-        <div>
-          <p className="text-md font-semibold text-foreground">{t('settings.general', 'General')}</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t('settings.displayLocalization', 'Display and localization preferences')}
-          </p>
-        </div>
-        <div className="col-span-3 grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Theme */}
-          <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-3">
-              {t('settings.theme', 'Theme')}
-            </label>
-            <div className="flex items-center gap-0 w-full">
-              {/* Light Button */}
-              <button
-                onClick={() => {
-                  if (theme !== 'light') setTheme('light');
-                }}
-                className={`flex-1 inline-flex items-center justify-center h-9 gap-2 px-4 text-sm font-medium transition-all border border-r-0 border-border rounded-l-md ${theme === 'light'
-                    ? 'bg-[color:var(--accent-600)] border-[color:var(--accent-800)] text-white hover:bg-[color:var(--accent-700)]'
-                    : 'bg-card text-foreground'
-                  }`}
-              >
-                <Sun size={18} />
-                <span>{t('buttons.light', 'Light')}</span>
-              </button>
-
-              {/* Dark Button */}
-              <button
-                onClick={() => {
-                  if (theme !== 'dark') setTheme('dark');
-                }}
-                className={`flex-1 inline-flex items-center justify-center h-9 gap-2 px-4 text-sm font-medium transition-all border border-r-0 border-border ${theme === 'dark'
-                    ? 'bg-[color:var(--accent-600)] border-[color:var(--accent-400)] text-white hover:bg-[color:var(--accent-700)]'
-                    : 'bg-card text-foreground'
-                  }`}
-              >
-                <Moon size={18} />
-                <span>{t('buttons.dark', 'Dark')}</span>
-              </button>
-
-              {/* System Button */}
-              <button
-                onClick={() => {
-                  if (theme !== 'system') setTheme('system');
-                }}
-                className={`flex-1 inline-flex items-center justify-center h-9 gap-2 px-4 text-sm font-medium transition-all border border-border rounded-r-md ${theme === 'system'
-                    ? 'bg-[color:var(--accent-600)] border-[color:var(--accent-800)] text-white hover:bg-[color:var(--accent-700)]'
-                    : 'bg-card text-foreground'
-                  }`}
-              >
-                <Monitor size={18} />
-                <span>{t('buttons.system', 'System')}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Accent Color Picker */}
-          <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-3">
-              {t('settings.accentColor', 'Accent Color')}
-            </label>
-            <ColorPicker
-              selectedColor={accentColor}
-              onColorChange={setAccentColor}
-            />
-          </div>
-
-          {/* Language */}
-          <div className="col-span-1 md:col-span-4">
-            <label className="block text-sm font-medium text-foreground mb-3">
-              {t('settings.language', 'Language')}
-            </label>
-            <CustomDropdownMenu
-              items={[
-                {
-                  label: t('languages.en', 'English'),
-                  icon: 'Globe',
-                  onClick: () => setLanguage('en'),
-                  className: language === 'en' ? 'bg-[color:var(--accent-600)] text-white font-semibold' : '',
-                },
-                {
-                  label: t('languages.es', 'Spanish'),
-                  icon: 'Globe',
-                  onClick: () => setLanguage('es'),
-                  className: language === 'es' ? 'bg-[color:var(--accent-600)] text-white font-semibold' : '',
-                },
-              ]}
-              trigger={<LanguageButton />}
-              align="start"
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Business Information Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 py-6 border-t border-border">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 py-6">
         <div>
           <p className="text-md font-semibold text-foreground">{t('settings.businessInfo', 'Business Info')}</p>
           <p className="text-sm text-muted-foreground mt-1">
@@ -156,8 +104,8 @@ export default function SettingsGeneralPage() {
             </label>
             <input
               type="text"
-              name="businessName"
-              value={businessData.businessName}
+              name="business_name"
+              value={orgData.business_name || ''}
               onChange={handleInputChange}
               placeholder={t('settings.businessNamePlaceholder', 'Your business name')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
@@ -170,8 +118,8 @@ export default function SettingsGeneralPage() {
             </label>
             <input
               type="email"
-              name="email"
-              value={businessData.email}
+              name="business_email"
+              value={orgData.business_email || ''}
               onChange={handleInputChange}
               placeholder={t('common.email', 'Email') + '@example.com'}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
@@ -184,8 +132,8 @@ export default function SettingsGeneralPage() {
             </label>
             <input
               type="tel"
-              name="phone"
-              value={businessData.phone}
+              name="business_phone"
+              value={orgData.business_phone || ''}
               onChange={handleInputChange}
               placeholder={t('common.phone', 'Phone')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
@@ -198,8 +146,8 @@ export default function SettingsGeneralPage() {
             </label>
             <input
               type="url"
-              name="website"
-              value={businessData.website}
+              name="business_website"
+              value={orgData.business_website || ''}
               onChange={handleInputChange}
               placeholder={t('settings.websitePlaceholder', 'https://example.com')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
@@ -213,34 +161,34 @@ export default function SettingsGeneralPage() {
         <div>
           <p className="text-md font-semibold text-foreground">{t('settings.address', 'Address')}</p>
           <p className="text-sm text-muted-foreground mt-1">
-            {t('settings.businessLocation', 'Business location and address')}
+            {t('settings.businessLocation', 'Business location')}
           </p>
         </div>
         <div className="col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2">
+          <div className="col-span-2">
             <label className="block text-sm font-medium text-foreground mb-2">
-              {t('settings.addressLine1', 'Address Line 1')}
+              {t('settings.addressLine1', 'Street Address')}
             </label>
             <input
               type="text"
-              name="addressLine1"
-              value={businessData.addressLine1}
+              name="address_line_1"
+              value={orgData.address_line_1 || ''}
               onChange={handleInputChange}
               placeholder={t('settings.addressLine1Placeholder', 'Street address')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div className="col-span-2">
             <label className="block text-sm font-medium text-foreground mb-2">
-              {t('settings.addressLine2', 'Address Line 2')}
+              {t('settings.addressLine2', 'Apartment/Suite')}
             </label>
             <input
               type="text"
-              name="addressLine2"
-              value={businessData.addressLine2}
+              name="address_line_2"
+              value={orgData.address_line_2 || ''}
               onChange={handleInputChange}
-              placeholder={t('settings.addressLine2Placeholder', 'Apartment, suite, unit, etc.')}
+              placeholder={t('settings.addressLine2Placeholder', 'Apartment, suite, etc. (optional)')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
@@ -252,9 +200,23 @@ export default function SettingsGeneralPage() {
             <input
               type="text"
               name="city"
-              value={businessData.city}
+              value={orgData.city || ''}
               onChange={handleInputChange}
               placeholder={t('settings.cityPlaceholder', 'City')}
+              className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('settings.state', 'State')}
+            </label>
+            <input
+              type="text"
+              name="state"
+              value={orgData.state || ''}
+              onChange={handleInputChange}
+              placeholder={t('settings.statePlaceholder', 'State')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
@@ -265,24 +227,10 @@ export default function SettingsGeneralPage() {
             </label>
             <input
               type="text"
-              name="postalCode"
-              value={businessData.postalCode}
+              name="postal_code"
+              value={orgData.postal_code || ''}
               onChange={handleInputChange}
               placeholder={t('settings.postalCodePlaceholder', 'Postal code')}
-              className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('settings.stateProvince', 'State / Province')}
-            </label>
-            <input
-              type="text"
-              name="state"
-              value={businessData.state}
-              onChange={handleInputChange}
-              placeholder={t('settings.stateProvincePlaceholder', 'State or province')}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
@@ -293,18 +241,16 @@ export default function SettingsGeneralPage() {
             </label>
             <select
               name="country"
-              value={businessData.country}
+              value={orgData.country || ''}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="ES">{t('countries.spain', 'Spain')}</option>
-              <option value="FR">{t('countries.france', 'France')}</option>
-              <option value="DE">{t('countries.germany', 'Germany')}</option>
-              <option value="IT">{t('countries.italy', 'Italy')}</option>
-              <option value="PT">{t('countries.portugal', 'Portugal')}</option>
-              <option value="US">{t('countries.unitedStates', 'United States')}</option>
-              <option value="MX">{t('countries.mexico', 'Mexico')}</option>
-              <option value="GB">{t('countries.unitedKingdom', 'United Kingdom')}</option>
+              <option value="ES">Spain</option>
+              <option value="US">United States</option>
+              <option value="MX">Mexico</option>
+              <option value="UK">United Kingdom</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
             </select>
           </div>
         </div>
@@ -315,7 +261,7 @@ export default function SettingsGeneralPage() {
         <div>
           <p className="text-md font-semibold text-foreground">{t('settings.invoiceSettings', 'Invoice Settings')}</p>
           <p className="text-sm text-muted-foreground mt-1">
-            {t('settings.defaultInvoiceSettings', 'Default settings for invoices')}
+            {t('settings.invoiceDefaults', 'Default invoice settings')}
           </p>
         </div>
         <div className="col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -325,46 +271,41 @@ export default function SettingsGeneralPage() {
             </label>
             <select
               name="currency"
-              value={businessData.currency}
+              value={orgData.currency || ''}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="EUR">{t('currencies.eur', 'EUR - Euro')}</option>
-              <option value="USD">{t('currencies.usd', 'USD - US Dollar')}</option>
-              <option value="GBP">{t('currencies.gbp', 'GBP - British Pound')}</option>
-              <option value="JPY">{t('currencies.jpy', 'JPY - Japanese Yen')}</option>
-              <option value="CHF">{t('currencies.chf', 'CHF - Swiss Franc')}</option>
-              <option value="CAD">{t('currencies.cad', 'CAD - Canadian Dollar')}</option>
-              <option value="AUD">{t('currencies.aud', 'AUD - Australian Dollar')}</option>
-              <option value="MXN">{t('currencies.mxn', 'MXN - Mexican Peso')}</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="USD">USD - Dollar</option>
+              <option value="GBP">GBP - Pound</option>
+              <option value="MXN">MXN - Peso</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              {t('settings.defaultDueDays', 'Default Due Days')}
+              {t('settings.language', 'Language')}
             </label>
-            <input
-              type="number"
-              name="defaultDueDays"
-              value={businessData.defaultDueDays}
-              onChange={handleInputChange}
-              min="0"
-              max="365"
-              placeholder={t('settings.defaultDueDaysPlaceholder', '30')}
+            <select
+              value={userLanguage}
+              onChange={(e) => setUserLanguage(e.target.value)}
               className="w-full px-3 py-2 border border-border bg-card text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              {t('settings.defaultPaymentTerms', 'Default payment terms in days')}
-            </p>
+            >
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
           </div>
         </div>
       </div>
 
       {/* Save Button */}
       <div className="flex justify-end py-6 border-t border-border">
-        <Button variant="theme">
-          {t('settings.saveChanges', 'Save Changes')}
+        <Button
+          variant="theme"
+          onClick={handleSave}
+          disabled={isSaving}
+        >
+          {isSaving ? t('actions.saving', 'Saving...') : t('actions.save', 'Save Settings')}
         </Button>
       </div>
     </div>

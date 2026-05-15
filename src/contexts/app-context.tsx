@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
-import type { Language } from '@/i18n';
-import i18n from '@/i18n';
+import type { Language } from '@/lib/i18n';
+import i18n from '@/lib/i18n';
 
 interface AppContextType {
     language: Language;

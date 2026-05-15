@@ -1,14 +1,54 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Outlet } from 'react-router';
+import { useNavigate } from 'react-router';
+import { UserCircle } from 'lucide-react';
 import {
     SidebarProvider,
     Sidebar,
     SidebarContent,
+    SidebarFooter,
 } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 import Header from '@/app/components/header';
 import { AppSidebar } from '@/app/components/app-sidebar';
 import { ChatPanel } from '@/app/components/chat-panel';
 import { UnsavedChangesGlobalModal } from '@/app/components/modals/unsaved-changes-modal';
+import { Button } from '@/components/ui/button';
+import { OrgContext } from '@/contexts/OrgContext';
+
+const OrgSelectorFooter = () => {
+    const navigate = useNavigate();
+    const { open } = useSidebar();
+    // Safely get org from context without throwing error if not in OrgProvider
+    const orgContext = useContext(OrgContext);
+
+    if (!orgContext) return null;
+
+    const { org } = orgContext;
+    const orgName = org?.business_name || org?.name;
+
+    if (!orgName) return null;
+
+    return (
+        <SidebarFooter>
+            <Button
+                variant="theme-secondary"
+                onClick={() => {
+                    localStorage.removeItem('selectedOrgId');
+                    localStorage.removeItem('selectedOrgName');
+                    navigate('/orgs');
+                }}
+                title={orgName}
+                className={`w-full flex items-center rounded-md text-sm font-medium ${
+                    open ? 'gap-3 px-3 py-2 h-9' : 'justify-center p-2 h-9'
+                }`}
+            >
+                <UserCircle size={20} className="flex-shrink-0" />
+                <span className={`${open ? 'flex-1 text-left truncate' : 'hidden'}`}>{orgName}</span>
+            </Button>
+        </SidebarFooter>
+    );
+};
 
 export default function MainLayout() {
     const [chatOpen, setChatOpen] = useState(false);
@@ -21,6 +61,7 @@ export default function MainLayout() {
                     <SidebarContent>
                         <AppSidebar />
                     </SidebarContent>
+                    <OrgSelectorFooter />
                 </Sidebar>
 
                 {/* Main content area with header and routes */}

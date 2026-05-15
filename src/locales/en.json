@@ -1,4 +1,37 @@
 {
+    "auth": {
+        "welcomeBack": "Welcome back",
+        "loginToAccount": "Login to your account to continue",
+        "createAccountTitle": "Create account",
+        "createAccountSubtitle": "Create your account to continue",
+        "loginWithGoogle": "Login with Google",
+        "loginWithMicrosoft": "Login with Microsoft",
+        "signUpWithGoogle": "Sign up with Google",
+        "signUpWithMicrosoft": "Sign up with Microsoft",
+        "orContinueWithEmail": "Or continue with email",
+        "email": "Email",
+        "emailPlaceholder": "name@example.com",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPassword": "Confirm password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "passwordsDontMatch": "Passwords don't match",
+        "accountCreated": "Account created successfully",
+        "signin": "Sign in",
+        "signup": "Sign up",
+        "forgotPassword": "Forgot your password?",
+        "resetPasswordTitle": "Reset password",
+        "resetPasswordSubtitle": "Enter your email to receive a password reset link",
+        "sendResetLink": "Send reset link",
+        "backToLogin": "Back to login",
+        "password_changed": "Password changed successfully",
+        "recoverPasswordTitle": "Recover password",
+        "recoverPasswordSubtitle": "Enter your email to recover your account",
+        "sendRecoveryLink": "Send recovery link",
+        "haveAccount": "Have an account?",
+        "dontHaveAccount": "Don't have an account?",
+        "loading": "Loading..."
+    },
     "sidebar": {
         "dashboard": "Dashboard",
         "invoices": "Invoices",
@@ -6,12 +39,25 @@
         "providers": "Providers",
         "settings": "Settings",
         "general": "General",
+        "profile": "Profile",
         "serialPatterns": "Serial Patterns"
     },
     "footer": {
         "version": "Version"
     },
     "pages": {
+        "selectOrganization": {
+            "title": "Select Organization",
+            "description": "Choose an organization to manage",
+            "createNew": "Create Organization",
+            "createDescription": "Enter the name of your new organization",
+            "noOrgs": "No Organizations",
+            "createFirstOrg": "Create your first organization to get started"
+        },
+        "settingsProfile": {
+            "title": "Profile Settings",
+            "description": "Customize your personal preferences"
+        },
         "dashboard": {
             "title": "Welcome to Krill Bill",
             "subtitle": "Your local-first invoice manager SaaS",
@@ -123,6 +169,18 @@
         "discard": "Discard",
         "keepEditing": "Keep Editing"
     },
+    "actions": {
+        "save": "Save Settings",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating...",
+        "logout": "Log Out"
+    },
+    "form": {
+        "organizationName": "Organization Name",
+        "organizationNamePlaceholder": "My Company"
+    },
     "languages": {
         "current": "English",
         "en": "English",
@@ -131,7 +189,17 @@
     "toasts": {
         "serialNumberCreated": "Serial number created successfully",
         "serialNumberUpdated": "Serial number updated successfully",
-        "serialNumberDeleted": "Serial number deleted successfully"
+        "serialNumberDeleted": "Serial number deleted successfully",
+        "settingsSaved": "Settings saved successfully",
+        "loggedOut": "Logged out successfully",
+        "organizationCreated": "Organization created successfully"
+    },
+    "errors": {
+        "logout": "Failed to log out",
+        "organizationNameRequired": "Organization name is required",
+        "creatingOrganization": "Failed to create organization",
+        "loadingOrganizations": "Failed to load organizations",
+        "savingSettings": "Failed to save settings"
     },
     "common": {
         "providerName": "Provider Name",
@@ -140,7 +208,10 @@
         "description": "Description",
         "cancel": "Cancel",
         "create": "Create",
-        "creating": "Creating..."
+        "creating": "Creating...",
+        "saving": "Saving...",
+        "loading": "Loading...",
+        "confirmDelete": "Are you sure?"
     },
     "providers": {
         "createProvider": "Create Provider",
@@ -162,9 +233,23 @@
     "settings": {
         "general": "General",
         "displayLocalization": "Display and localization preferences",
-        "theme": "Theme",
-        "accentColor": "Accent Color",
-        "language": "Language",
+        "theme": {
+            "title": "Theme",
+            "description": "Choose your preferred color theme",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System"
+        },
+        "accentColor": {
+            "title": "Accent Color",
+            "description": "Choose your accent color"
+        },
+        "language": {
+            "title": "Language",
+            "description": "Select your preferred language",
+            "english": "English",
+            "spanish": "Español"
+        },
         "businessInfo": "Business Info",
         "basicBusinessInfo": "Basic business information",
         "businessName": "Business Name",
@@ -264,5 +349,13 @@
     },
     "accessibility": {
         "openMenu": "Open menu"
+    },
+    "errorBoundary": {
+        "title": "Something went wrong",
+        "description": "An unexpected error occurred. Please try refreshing the page.",
+        "reload": "Reload page",
+        "tryAgain": "Try again",
+        "showDetails": "Show details",
+        "hideDetails": "Hide details"
     }
 }

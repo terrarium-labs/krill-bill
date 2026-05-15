@@ -5,12 +5,15 @@ import ClientsPage from '@/app/pages/ClientsPage';
 import SettingsSerialNumbersPage from '@/app/pages/SettingsSerialNumbersPage';
 import SettingsGeneralPage from '@/app/pages/SettingsGeneralPage';
 import ProvidersPage from './pages/ProvidersPage';
+import SettingsProfilePage from './pages/SettingsProfilePage';
 
 export function SettingsRoutes() {
   return (
     <Routes>
       <Route path="serial-numbers" element={<SettingsSerialNumbersPage />} />
       <Route path="general" element={<SettingsGeneralPage />} />
+      <Route path="profile" element={<SettingsProfilePage />} />
+
     </Routes>
   );
 }

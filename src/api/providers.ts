@@ -1,0 +1,213 @@
+import { supabase } from '@/lib/supabase';
+import { Provider } from '@/types/providers';
+
+/**
+ * Fetch all providers for an organization
+ */
+export const fetchOrgProviders = async (orgId: string): Promise<{ data: Provider[] | null; error: string | null }> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: null, error: 'User not authenticated' };
+    }
+
+    // Verify user has access to this org
+    const { data: orgMember } = await supabase
+      .from('org_members')
+      .select('*')
+      .eq('org_id', orgId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!orgMember) {
+      console.error('API: User does not have access to org:', orgId);
+      return { data: null, error: 'Access denied' };
+    }
+
+    const { data, error } = await supabase
+      .from('providers')
+      .select('*')
+      .eq('org_id', orgId)
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('API: Error fetching providers:', error);
+      return { data: null, error: error.message };
+    }
+
+    console.log('API: Successfully fetched', data?.length || 0, 'providers');
+    return { data: data || [], error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to fetch providers';
+    console.error('API: Error in fetchOrgProviders:', message);
+    return { data: null, error: message };
+  }
+};
+
+/**
+ * Fetch a single provider by ID
+ */
+export const fetchProviderById = async (orgId: string, providerId: string): Promise<{ data: Provider | null; error: string | null }> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: null, error: 'User not authenticated' };
+    }
+
+    // Verify access
+    const { data: orgMember } = await supabase
+      .from('org_members')
+      .select('*')
+      .eq('org_id', orgId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!orgMember) {
+      return { data: null, error: 'Access denied' };
+    }
+
+    const { data, error } = await supabase
+      .from('providers')
+      .select('*')
+      .eq('id', providerId)
+      .eq('org_id', orgId)
+      .single();
+
+    if (error) {
+      console.error('API: Error fetching provider:', error);
+      return { data: null, error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to fetch provider';
+    console.error('API: Error in fetchProviderById:', message);
+    return { data: null, error: message };
+  }
+};
+
+/**
+ * Create a new provider
+ */
+export const createProvider = async (orgId: string, providerData: Omit<Provider, 'id' | 'org_id' | 'created_at' | 'updated_at'>): Promise<{ data: Provider | null; error: string | null }> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: null, error: 'User not authenticated' };
+    }
+
+    // Verify access and permission
+    const { data: orgMember } = await supabase
+      .from('org_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!orgMember) {
+      return { data: null, error: 'Access denied' };
+    }
+
+    const { data, error } = await supabase
+      .from('providers')
+      .insert([{ ...providerData, org_id: orgId }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('API: Error creating provider:', error);
+      return { data: null, error: error.message };
+    }
+
+    console.log('API: Successfully created provider:', data.id);
+    return { data, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to create provider';
+    console.error('API: Error in createProvider:', message);
+    return { data: null, error: message };
+  }
+};
+
+/**
+ * Update a provider
+ */
+export const updateProvider = async (orgId: string, providerId: string, updates: Partial<Provider>): Promise<{ data: null; error: string | null }> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: null, error: 'User not authenticated' };
+    }
+
+    // Verify access and admin permission
+    const { data: orgMember } = await supabase
+      .from('org_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!orgMember || !['owner', 'admin'].includes(orgMember.role)) {
+      return { data: null, error: 'Permission denied' };
+    }
+
+    const { error } = await supabase
+      .from('providers')
+      .update(updates)
+      .eq('id', providerId)
+      .eq('org_id', orgId);
+
+    if (error) {
+      console.error('API: Error updating provider:', error);
+      return { data: null, error: error.message };
+    }
+
+    console.log('API: Successfully updated provider:', providerId);
+    return { data: null, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to update provider';
+    console.error('API: Error in updateProvider:', message);
+    return { data: null, error: message };
+  }
+};
+
+/**
+ * Delete a provider
+ */
+export const deleteProvider = async (orgId: string, providerId: string): Promise<{ data: null; error: string | null }> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { data: null, error: 'User not authenticated' };
+    }
+
+    // Verify access and admin permission
+    const { data: orgMember } = await supabase
+      .from('org_members')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!orgMember || !['owner', 'admin'].includes(orgMember.role)) {
+      return { data: null, error: 'Permission denied' };
+    }
+
+    const { error } = await supabase
+      .from('providers')
+      .delete()
+      .eq('id', providerId)
+      .eq('org_id', orgId);
+
+    if (error) {
+      console.error('API: Error deleting provider:', error);
+      return { data: null, error: error.message };
+    }
+
+    console.log('API: Successfully deleted provider:', providerId);
+    return { data: null, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to delete provider';
+    console.error('API: Error in deleteProvider:', message);
+    return { data: null, error: message };
+  }
+};

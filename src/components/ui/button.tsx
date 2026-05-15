@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         theme:
           "border [border-color:var(--accent-600)] [background-color:var(--accent-600)] text-white hover:[background-color:var(--accent-700)] dark:[border-color:var(--accent-600)] dark:[background-color:var(--accent-600)] dark:hover:[background-color:var(--accent-700)] dark:text-white focus-visible:ring-accent-500/20 dark:focus-visible:ring-accent-500/40",
+        "theme-secondary":
+          "[background-color:var(--accent-200)] [color:var(--accent-600)] hover:opacity-90 dark:[background-color:var(--accent-200)] dark:[color:var(--accent-600)] dark:hover:opacity-90 focus-visible:ring-accent-500/20 dark:focus-visible:ring-accent-500/40",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
