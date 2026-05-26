@@ -91,11 +91,27 @@
             "search": "Buscar facturas...",
             "newInvoice": "Nueva Factura",
             "createInvoice": "Crear Factura",
+            "createInvoiceDescription": "Crea una nueva factura para tu cliente",
             "noInvoices": "Sin facturas aún",
             "createFirstInvoice": "Comienza creando tu primera factura para comenzar a rastrear tus ventas",
             "totalInvoices": "Total de Facturas",
             "totalAmount": "Monto Total",
-            "pending": "Pendiente"
+            "pending": "Pendiente",
+            "placeholders": {
+                "clientName": "p. ej., Acme Inc.",
+                "amount": "0.00",
+                "description": "Descripción de la factura"
+            },
+            "errors": {
+                "invoiceNumberRequired": "El número de factura es obligatorio",
+                "issueDateRequired": "La fecha de emisión es obligatoria",
+                "issuerRequired": "El nombre del emisor es obligatorio",
+                "recipientRequired": "El nombre del destinatario es obligatorio",
+                "noItems": "Agrega al menos un artículo a la factura",
+                "clientNameRequired": "El nombre del cliente es obligatorio",
+                "amountRequired": "El monto es obligatorio",
+                "amountInvalid": "El monto debe ser un número válido"
+            }
         },
         "clients": {
             "title": "Clientes",
@@ -192,22 +208,27 @@
         "serialNumberDeleted": "Número de serie eliminado exitosamente",
         "settingsSaved": "Configuración guardada exitosamente",
         "loggedOut": "Sesión cerrada exitosamente",
-        "organizationCreated": "Organización creada exitosamente"
+        "organizationCreated": "Organización creada exitosamente",
+        "invoiceCreated": "Factura creada exitosamente"
     },
     "errors": {
         "logout": "Error al cerrar sesión",
         "organizationNameRequired": "El nombre de la organización es obligatorio",
         "creatingOrganization": "Error al crear la organización",
         "loadingOrganizations": "Error al cargar las organizaciones",
-        "savingSettings": "Error al guardar la configuración"
+        "savingSettings": "Error al guardar la configuración",
+        "creatingInvoice": "Error al crear la factura",
+        "userOrOrgNotFound": "Usuario u organización no encontrada"
     },
     "common": {
         "providerName": "Nombre del Proveedor",
+        "clientName": "Nombre del Cliente",
+        "amount": "Monto",
         "email": "Correo Electrónico",
         "phone": "Teléfono",
         "description": "Descripción",
         "cancel": "Cancelar",
-        "create": "Crear",
+        "create": "Crear Factura",
         "creating": "Creando...",
         "saving": "Guardando...",
         "loading": "Cargando...",

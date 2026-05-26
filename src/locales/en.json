@@ -91,11 +91,27 @@
             "search": "Search invoices...",
             "newInvoice": "New Invoice",
             "createInvoice": "Create Invoice",
+            "createInvoiceDescription": "Create a new invoice for your client",
             "noInvoices": "No invoices yet",
             "createFirstInvoice": "Start by creating your first invoice to begin tracking your sales",
             "totalInvoices": "Total Invoices",
             "totalAmount": "Total Amount",
-            "pending": "Pending"
+            "pending": "Pending",
+            "placeholders": {
+                "clientName": "e.g., Acme Inc.",
+                "amount": "0.00",
+                "description": "Invoice description"
+            },
+            "errors": {
+                "invoiceNumberRequired": "Invoice number is required",
+                "issueDateRequired": "Issue date is required",
+                "issuerRequired": "Issuer name is required",
+                "recipientRequired": "Recipient name is required",
+                "noItems": "Add at least one item to the invoice",
+                "clientNameRequired": "Client name is required",
+                "amountRequired": "Amount is required",
+                "amountInvalid": "Amount must be a valid number"
+            }
         },
         "clients": {
             "title": "Clients",
@@ -192,22 +208,27 @@
         "serialNumberDeleted": "Serial number deleted successfully",
         "settingsSaved": "Settings saved successfully",
         "loggedOut": "Logged out successfully",
-        "organizationCreated": "Organization created successfully"
+        "organizationCreated": "Organization created successfully",
+        "invoiceCreated": "Invoice created successfully"
     },
     "errors": {
         "logout": "Failed to log out",
         "organizationNameRequired": "Organization name is required",
         "creatingOrganization": "Failed to create organization",
         "loadingOrganizations": "Failed to load organizations",
-        "savingSettings": "Failed to save settings"
+        "savingSettings": "Failed to save settings",
+        "creatingInvoice": "Failed to create invoice",
+        "userOrOrgNotFound": "User or organization not found"
     },
     "common": {
         "providerName": "Provider Name",
+        "clientName": "Client Name",
+        "amount": "Amount",
         "email": "Email",
         "phone": "Phone",
         "description": "Description",
         "cancel": "Cancel",
-        "create": "Create",
+        "create": "Create Invoice",
         "creating": "Creating...",
         "saving": "Saving...",
         "loading": "Loading...",
