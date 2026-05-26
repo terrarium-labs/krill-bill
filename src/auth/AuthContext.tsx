@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { useNavigate } from 'react-router'
@@ -66,38 +66,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return () => subscription.unsubscribe()
     }, [])
 
-    const signIn = async (email: string, password: string) => {
+    const signIn = useCallback(async (email: string, password: string) => {
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
         return { error }
-    }
+    }, [])
 
-    const signUp = async (email: string, password: string) => {
-        const { error, data } = await supabase.auth.signUp({
+    const signUp = useCallback(async (email: string, password: string) => {
+        const { error } = await supabase.auth.signUp({
             email,
             password,
         })
         
         return { error }
-    }
+    }, [])
 
-    const resetPassword = async (email: string) => {
+    const resetPassword = useCallback(async (email: string) => {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/reset-password`
         })
         return { error }
-    }
+    }, [])
 
-    const updatePassword = async (password: string) => {
+    const updatePassword = useCallback(async (password: string) => {
         const { error } = await supabase.auth.updateUser({
             password: password
         })
         return { error }
-    }
+    }, [])
 
-    const loginWithGoogle = async () => {
+    const loginWithGoogle = useCallback(async () => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
@@ -105,9 +105,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
         })
         return { error }
-    }
+    }, [])
 
-    const loginWithMicrosoft = async () => {
+    const loginWithMicrosoft = useCallback(async () => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'azure',
             options: {
@@ -116,25 +116,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
         })
         return { error }
-    }
+    }, [])
 
-    const signOut = async () => {
+    const signOut = useCallback(async () => {
         localStorage.removeItem('sidebar-open')
         localStorage.removeItem('chat-visible')
         localStorage.removeItem('last-org-id')
         await supabase.auth.signOut()
         navigate('/')
-    }
+    }, [navigate])
 
-    const refreshToken = async () => {
+    const refreshToken = useCallback(async () => {
         const { data, error } = await supabase.auth.refreshSession()
         if (data.session) {
             localStorage.setItem('x-auth-token', data.session.access_token)
         }
         return { data, error }
-    }
+    }, [])
 
-    const value = {
+    const value = useMemo(() => ({
         user,
         session,
         loading,
@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loginWithGoogle,
         loginWithMicrosoft,
         refreshToken
-    }
+    }), [user, session, loading])
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

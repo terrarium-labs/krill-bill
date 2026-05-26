@@ -22,7 +22,7 @@ import SignUpPage from '@/auth/pages/SignUpPage';
 import RecoverPasswordPage from '@/auth/pages/RecoverPasswordPage';
 import ResetPasswordPage from '@/auth/pages/ResetPasswordPage';
 import OrgSelectionPage from '@/app/pages/OrgSelectionPage';
-import SettingsProfilePage from '@/app/pages/SettingsProfilePage';
+import SettingsProfilePage from '@/app/pages/settings/SettingsProfilePage';
 
 // Loading fallback
 const LoadingSpinner = () => (
@@ -31,9 +31,10 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Component to handle root path redirect
-const RootRedirect = () => {
+// Root component that checks auth and org selection
+const RootApp = () => {
   const { user, loading } = useAuth();
+  const selectedOrgId = localStorage.getItem('selectedOrgId');
 
   if (loading) {
     return <LoadingSpinner />;
@@ -43,21 +44,13 @@ const RootRedirect = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Redirect authenticated users to org selection (to choose which org to work with)
-  return <Navigate to="/orgs" replace />;
-};
-
-// Layout wrapper for protected routes with Org context
-const ProtectedLayoutWithOrg = () => {
-  const selectedOrgId = localStorage.getItem('selectedOrgId');
-
   if (!selectedOrgId) {
-    // No org selected, redirect to org selection
     return <Navigate to="/orgs" replace />;
   }
 
+  // User is authenticated and has selected an org, render the protected layout
   return (
-    <OrgProvider orgId={selectedOrgId}>
+    <OrgProvider orgId={selectedOrgId} key={selectedOrgId}>
       <UserProvider>
         <MainLayout />
       </UserProvider>
@@ -67,11 +60,11 @@ const ProtectedLayoutWithOrg = () => {
 
 // Import pages for routing
 import DashboardPage from '@/app/pages/DashboardPage';
-import InvoicesPage from '@/app/pages/InvoicesPage';
-import ClientsPage from '@/app/pages/ClientsPage';
-import ProvidersPage from '@/app/pages/ProvidersPage';
-import SettingsGeneralPage from '@/app/pages/SettingsGeneralPage';
-import SettingsSerialNumbersPage from '@/app/pages/SettingsSerialNumbersPage';
+import InvoicesPage from '@/app/pages/invoices/InvoicesPage';
+import ClientsPage from '@/app/pages/clients/ClientsPage';
+import ProvidersPage from '@/app/pages/providers/ProvidersPage';
+import SettingsGeneralPage from '@/app/pages/settings/SettingsGeneralPage';
+import SettingsSerialNumbersPage from '@/app/pages/settings/SettingsSerialNumbersPage';
 
 // Create router with all routes and error boundaries
 const router = createBrowserRouter([
@@ -79,10 +72,64 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <AuthProvider>
-        <RootRedirect />
+        <AuthGuard requireAuth>
+          <RootApp />
+        </AuthGuard>
       </AuthProvider>
     ),
     errorElement: <RouteErrorFallback />,
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'invoices',
+        element: <InvoicesPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'invoices/:id',
+        element: <InvoicesPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'clients',
+        element: <ClientsPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'clients/:id',
+        element: <ClientsPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'providers',
+        element: <ProvidersPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'providers/:id',
+        element: <ProvidersPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'settings/general',
+        element: <SettingsGeneralPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'settings/serial-numbers',
+        element: <SettingsSerialNumbersPage />,
+        errorElement: <RouteErrorFallback />,
+      },
+      {
+        path: 'settings/profile',
+        element: <SettingsProfilePage />,
+        errorElement: <RouteErrorFallback />,
+      },
+    ],
   },
   {
     path: '/login',
@@ -142,162 +189,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <OrgSelectionPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/dashboard',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <DashboardPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'invoices',
-        element: <InvoicesPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'clients',
-        element: <ClientsPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'providers',
-        element: <ProvidersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'settings/general',
-        element: <SettingsGeneralPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'settings/serial-numbers',
-        element: <SettingsSerialNumbersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'settings/profile',
-        element: <SettingsProfilePage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/invoices',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <InvoicesPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/clients',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <ClientsPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/providers',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <ProvidersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/settings/general',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <SettingsGeneralPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/settings/serial-numbers',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <SettingsSerialNumbersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
-  },
-  {
-    path: '/settings/profile',
-    element: (
-      <AuthProvider>
-        <AuthGuard requireAuth>
-          <ProtectedLayoutWithOrg />
-        </AuthGuard>
-      </AuthProvider>
-    ),
-    errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <SettingsProfilePage />,
         errorElement: <RouteErrorFallback />,
       },
     ],

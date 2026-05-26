@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import PageHeader from '@/app/components/page-header';
-import SerialNumbersTable from '../components/tables/serial-numbers-table';
-import SerialNumberModal from '../components/modals/serial-number-modal';
+import SerialNumbersTable from '../../components/tables/serial-numbers-table';
+import SerialNumberModal from '../../components/modals/serial-number-modal';
+import { DeleteModal } from '@/app/components/modals/delete-modal';
 import { SerialNumber } from '@/types/serial-numbers';
 
 // Mock API functions (replace with real API calls)
@@ -33,6 +34,9 @@ export default function SettingsSerialNumbersPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [serialNumberToDelete, setSerialNumberToDelete] = useState<SerialNumber | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Load serial numbers
   useEffect(() => {
@@ -76,9 +80,31 @@ export default function SettingsSerialNumbersPage() {
     }
   };
 
+  const handleDeleteClick = (serialNumber: SerialNumber) => {
+    setSerialNumberToDelete(serialNumber);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!serialNumberToDelete) return;
+    
+    setDeleting(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      setSerialNumbers(serialNumbers.filter((sn) => sn.id !== serialNumberToDelete.id));
+      toast.success(t('toasts.serialNumberDeleted'));
+      setDeleteModalOpen(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleDelete = (id: string) => {
-    setSerialNumbers(serialNumbers.filter((sn) => sn.id !== id));
-    toast.success(t('toasts.serialNumberDeleted'));
+    const sn = serialNumbers.find((s) => s.id === id);
+    if (sn) {
+      handleDeleteClick(sn);
+    }
   };
 
   const filteredNumbers = serialNumbers.filter(
@@ -93,6 +119,16 @@ export default function SettingsSerialNumbersPage() {
 
   return (
     <div className="space-y-6">
+      <DeleteModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title={t('serialNumbers.deleteTitle', 'Delete Serial Number?')}
+        description={t('serialNumbers.deleteDescription', `Are you sure you want to delete "${serialNumberToDelete?.name}"? This action cannot be undone.`)}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={deleting}
+        deleteText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
+      />
       <PageHeader
         title={t('pages.serialNumbers.title')}
         description={t('pages.serialNumbers.description')}

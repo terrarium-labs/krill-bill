@@ -6,8 +6,6 @@ import { useAuth } from '@/auth/AuthContext';
 import { useOrg } from '@/contexts/OrgContext';
 import { createInvoice } from '@/api/invoices';
 import { Invoice } from '@/api/invoices';
-import { fetchUserOrganizations } from '@/api/organizations';
-import { Organization } from '@/types/organization';
 import {
   Dialog,
   DialogContent,
@@ -54,7 +52,6 @@ export default function InvoiceModal({
   const { user } = useAuth();
   const { org } = useOrg();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [invoice, setInvoice] = React.useState<Partial<Invoice>>({
     invoice_number: '',
     invoice_type: 'sales',
@@ -69,19 +66,6 @@ export default function InvoiceModal({
     recipient_id: '',
     recipient_name: '',
   });
-
-  // Fetch organizations when modal opens
-  React.useEffect(() => {
-    if (open) {
-      const loadOrganizations = async () => {
-        const { data } = await fetchUserOrganizations();
-        if (data) {
-          setOrganizations(data);
-        }
-      };
-      loadOrganizations();
-    }
-  }, [open]);
 
   const handleOpenChange = React.useCallback(
     (next: boolean) => {
@@ -147,14 +131,14 @@ export default function InvoiceModal({
         const invoiceData: Omit<Invoice, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
           organization_id: org.id,
           client_id: invoice.client_id,
-          issuer_id: (invoice.issuer_id && invoice.issuer_id !== 'manual-entry') ? invoice.issuer_id : undefined,
-          recipient_id: (invoice.recipient_id && invoice.recipient_id !== 'manual-entry') ? invoice.recipient_id : undefined,
+          issuer_id: invoice.issuer_id || undefined,
+          recipient_id: invoice.recipient_id || undefined,
           issuer_name: invoice.issuer_name,
           recipient_name: invoice.recipient_name,
           invoice_number: invoice.invoice_number,
           invoice_type: invoice.invoice_type || 'sales',
-          issue_date: invoice.issue_date,
-          due_date: invoice.due_date,
+          issue_date: invoice.issue_date || new Date().toISOString().split('T')[0],
+          due_date: invoice.due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           amount: invoice.amount || 0,
           currency: invoice.currency || org.currency,
           status: 'draft',
@@ -171,6 +155,7 @@ export default function InvoiceModal({
 
         if (createdInvoice) {
           toast.success(t('toasts.invoiceCreated', 'Invoice created successfully'));
+          await new Promise(resolve => setTimeout(resolve, 500));
           await onInvoiceCreated?.(createdInvoice);
           handleOpenChange(false);
         }
@@ -186,7 +171,7 @@ export default function InvoiceModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-7xl  md:min-w-7xl w-full  w-[95vw] h-[95vh] flex flex-col p-0">
+      <DialogContent className="max-w-7xl md:min-w-7xl w-full w-[95vw] h-[95vh] flex flex-col p-0 overflow-visible">
         <DialogHeader className="px-6 pt-6">
           <DialogTitle>{t('invoices.createInvoice', 'Create Invoice')}</DialogTitle>
           <DialogDescription>
@@ -194,19 +179,19 @@ export default function InvoiceModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex-1 flex min-h-0 overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex-1 flex min-h-0 overflow-visible">
           {/* Responsive Grid Container */}
-          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-visible">
             {/* Left Side - Form */}
-            <div className="overflow-hidden flex flex-col border-b lg:border-b-0 lg:border-r border-border">
-              <div className="px-6 py-4 overflow-y-auto">
-                <InvoiceForm invoice={invoice} onInvoiceChange={setInvoice} organizations={organizations} />
+            <div className="flex flex-col border-b lg:border-b-0 lg:border-r border-border overflow-visible">
+              <div className="px-6 py-4 overflow-y-auto overflow-x-visible">
+                <InvoiceForm invoice={invoice} onInvoiceChange={setInvoice} />
               </div>
             </div>
 
             {/* Right Side - PDF Preview */}
-            <div className="overflow-hidden flex flex-col">
-              <div className="px-6 py-4 overflow-y-auto">
+            <div className="flex flex-col overflow-visible">
+              <div className="px-6 py-4 overflow-y-auto overflow-x-visible">
                 <InvoicePDFPreview invoice={invoice} businessName={org?.business_name || org?.name} />
               </div>
             </div>

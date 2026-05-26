@@ -2,108 +2,20 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { MultiSelectApi } from '@/app/components/buttons/multi-select-api-button';
 import { Invoice, InvoiceItem } from '@/api/invoices';
-import { Organization, OrganizationPartner } from '@/types/organization';
-import { fetchOrganizationPartners } from '@/api/organization-partners';
+import { fetchOrgClients } from '@/api/clients';
+import { fetchOrgProviders } from '@/api/providers';
 import { useOrg } from '@/contexts/OrgContext';
 
 interface InvoiceFormProps {
   invoice: Partial<Invoice>;
   onInvoiceChange: (invoice: Partial<Invoice>) => void;
-  organizations?: Organization[];
 }
 
-const MANUAL_ENTRY_ID = 'manual-entry';
-
-export default function InvoiceForm({ invoice, onInvoiceChange, organizations = [] }: InvoiceFormProps) {
+export default function InvoiceForm({ invoice, onInvoiceChange }: InvoiceFormProps) {
   const { t } = useTranslation();
   const { org } = useOrg();
-  const [partners, setPartners] = React.useState<OrganizationPartner[]>([]);
-  const [manualIssuer, setManualIssuer] = React.useState('');
-  const [manualRecipient, setManualRecipient] = React.useState('');
-
-  // Fetch partners when component mounts
-  React.useEffect(() => {
-    if (org?.id) {
-      const loadPartners = async () => {
-        const { data } = await fetchOrganizationPartners(org.id);
-        if (data) {
-          setPartners(data as OrganizationPartner[]);
-        }
-      };
-      loadPartners();
-    }
-  }, [org?.id]);
-
-  // Build multi-select options
-  const buildOptions = () => {
-    const options = [];
-    
-    // Current company
-    if (org) {
-      options.push({
-        label: `${org.business_name || org.name} (Current)`,
-        value: org.id,
-      });
-    }
-
-    // Partners
-    partners.forEach((partner: any) => {
-      if (partner.partner_org) {
-        options.push({
-          label: partner.partner_org.business_name || partner.partner_org.name,
-          value: partner.partner_org.id,
-        });
-      }
-    });
-
-    // Add manually option
-    options.push({
-      label: 'Add Manually',
-      value: MANUAL_ENTRY_ID,
-    });
-
-    return options;
-  };
-
-  const options = buildOptions();
-
-  const handleIssuerChange = (values: string[]) => {
-    const value = values[0];
-    if (value === MANUAL_ENTRY_ID) {
-      onInvoiceChange({
-        ...invoice,
-        issuer_id: MANUAL_ENTRY_ID,
-        issuer_name: manualIssuer,
-      });
-    } else {
-      const selectedOrg = organizations.find((o) => o.id === value);
-      onInvoiceChange({
-        ...invoice,
-        issuer_id: value,
-        issuer_name: selectedOrg?.business_name || selectedOrg?.name,
-      });
-    }
-  };
-
-  const handleRecipientChange = (values: string[]) => {
-    const value = values[0];
-    if (value === MANUAL_ENTRY_ID) {
-      onInvoiceChange({
-        ...invoice,
-        recipient_id: MANUAL_ENTRY_ID,
-        recipient_name: manualRecipient,
-      });
-    } else {
-      const selectedOrg = organizations.find((o) => o.id === value);
-      onInvoiceChange({
-        ...invoice,
-        recipient_id: value,
-        recipient_name: selectedOrg?.business_name || selectedOrg?.name,
-      });
-    }
-  };
 
   const handleRemoveItem = (index: number) => {
     const newItems = invoice.items?.filter((_, i) => i !== index) || [];
@@ -145,49 +57,73 @@ export default function InvoiceForm({ invoice, onInvoiceChange, organizations = 
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="block text-xs font-medium text-foreground mb-1">
-              Issuer (From)
+              {t('invoices.issuer', 'Issuer (From)')}
             </label>
-            <MultiSelect
-              options={options}
-              selected={invoice.issuer_id ? [invoice.issuer_id] : []}
-              onChange={handleIssuerChange}
-              placeholder="Select issuer..."
+            <MultiSelectApi
+              fetchOptions={fetchOrgProviders}
+              fetchArgs={org?.id ? [org.id] : []}
+              optionsKey=""
+              customValueKey={(item) => item.id}
+              customLabelKey={(item) => item.business_name || item.name}
+              value={invoice.issuer_id ? [invoice.issuer_id] : []}
+              onChangeValue={(values) => {
+                const providerId = values[0];
+                if (providerId) {
+                  onInvoiceChange({
+                    ...invoice,
+                    issuer_id: providerId,
+                  });
+                }
+              }}
+              onChangeValueWithItem={(values, itemsMap, lastItem) => {
+                if (lastItem) {
+                  onInvoiceChange({
+                    ...invoice,
+                    issuer_id: lastItem.id,
+                    issuer_name: lastItem.business_name || lastItem.name,
+                  });
+                }
+              }}
+              placeholder={t('invoices.selectIssuer', 'Select issuer...')}
+              maxCount={1}
+              searchable={true}
             />
-            {invoice.issuer_id === MANUAL_ENTRY_ID && (
-              <input
-                type="text"
-                value={manualIssuer}
-                onChange={(e) => {
-                  setManualIssuer(e.target.value);
-                  onInvoiceChange({ ...invoice, issuer_name: e.target.value });
-                }}
-                className="w-full mt-2 px-2 py-1 text-sm border border-border bg-background text-foreground rounded focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Enter issuer name"
-              />
-            )}
           </div>
           <div>
             <label className="block text-xs font-medium text-foreground mb-1">
-              Recipient (To)
+              {t('invoices.recipient', 'Recipient (To)')}
             </label>
-            <MultiSelect
-              options={options}
-              selected={invoice.recipient_id ? [invoice.recipient_id] : []}
-              onChange={handleRecipientChange}
-              placeholder="Select recipient..."
+            <MultiSelectApi
+              fetchOptions={fetchOrgClients}
+              fetchArgs={org?.id ? [org.id] : []}
+              optionsKey="null"
+              customValueKey={(item) => item.id}
+              customLabelKey={(item) => item.business_name || item.name}
+              value={invoice.recipient_id ? [invoice.recipient_id] : []}
+              onChangeValue={(values) => {
+                const clientId = values[0];
+                if (clientId) {
+                  onInvoiceChange({
+                    ...invoice,
+                    recipient_id: clientId,
+                    client_id: clientId,
+                  });
+                }
+              }}
+              onChangeValueWithItem={(values, itemsMap, lastItem) => {
+                if (lastItem) {
+                  onInvoiceChange({
+                    ...invoice,
+                    recipient_id: lastItem.id,
+                    recipient_name: lastItem.business_name || lastItem.name,
+                    client_id: lastItem.id,
+                  });
+                }
+              }}
+              placeholder={t('invoices.selectRecipient', 'Select recipient...')}
+              maxCount={1}
+              searchable={true}
             />
-            {invoice.recipient_id === MANUAL_ENTRY_ID && (
-              <input
-                type="text"
-                value={manualRecipient}
-                onChange={(e) => {
-                  setManualRecipient(e.target.value);
-                  onInvoiceChange({ ...invoice, recipient_name: e.target.value });
-                }}
-                className="w-full mt-2 px-2 py-1 text-sm border border-border bg-background text-foreground rounded focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Enter recipient name"
-              />
-            )}
           </div>
         </div>
       </div>

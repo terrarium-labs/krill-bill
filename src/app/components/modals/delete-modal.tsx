@@ -141,7 +141,7 @@ export function DeleteModal({
                     <Button
                         ref={deleteButtonRef}
                         type="button"
-                        variant="destructive"
+                        variant="theme"
                         onClick={handleConfirm}
                         disabled={isDeleting}
                     >

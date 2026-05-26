@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { useAuth } from '@/auth/AuthContext';
 
@@ -26,12 +26,12 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const { user, session, loading } = useAuth();
 
-    const value: UserContextType = {
+    const value = useMemo(() => ({
         user,
         session,
         isAuthenticated: !!user,
         isLoading: loading,
-    };
+    }), [user, session, loading]);
 
     return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

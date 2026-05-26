@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useAuth } from '@/auth/AuthContext';
 import { fetchOrganization } from '@/api/organizations';
 import { getOrgMember } from '@/api/org-members';
@@ -26,6 +26,7 @@ export const OrgProvider = ({ children, orgId }: OrgProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef(false);
+  const hasInitializedRef = useRef(false);
 
   const fetchOrgData = async () => {
     if (!user || !orgId || isFetchingRef.current) return;
@@ -82,27 +83,37 @@ export const OrgProvider = ({ children, orgId }: OrgProviderProps) => {
     }
   };
 
+  // Only fetch on initial mount or when orgId changes, not on every user object change
   useEffect(() => {
-    if (user && orgId) {
+    if (!authLoading && user && orgId && !hasInitializedRef.current) {
+      hasInitializedRef.current = true;
       fetchOrgData();
     }
-  }, [user?.id, orgId]);
+  }, [orgId, authLoading]); // Only depend on orgId and authLoading, not user object
 
-  const refreshOrg = async () => {
+  const refreshOrg = useCallback(async () => {
     if (!orgId) return;
     const { data, error } = await fetchOrganization(orgId);
     if (!error && data) {
       setOrg(data);
     }
-  };
+  }, [orgId]);
 
-  const refreshPreferences = async () => {
-    if (!orgId || !user) return;
+  const refreshPreferences = useCallback(async () => {
+    if (!orgId || !user?.id) return;
     const { data, error } = await getOrgMember(orgId, user.id);
     if (!error && data) {
       setPreferences(data);
     }
-  };
+  }, [orgId, user?.id]);
+
+  // Memoize context value BEFORE early returns to maintain hook call order
+  const value = useMemo(() => ({
+    org: org!,
+    preferences: preferences!,
+    refreshOrg,
+    refreshPreferences,
+  }), [org, preferences, refreshOrg, refreshPreferences]);
 
   // Show loading skeleton while data is loading
   if (isLoading || authLoading || !org || !preferences) {
@@ -120,13 +131,6 @@ export const OrgProvider = ({ children, orgId }: OrgProviderProps) => {
       </div>
     );
   }
-
-  const value: OrgContextType = {
-    org,
-    preferences,
-    refreshOrg,
-    refreshPreferences,
-  };
 
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 };
