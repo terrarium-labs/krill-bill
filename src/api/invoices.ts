@@ -1,11 +1,25 @@
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
+export interface InvoiceItem {
+    id?: string;
+    name: string;
+    description?: string;
+    quantity: number;
+    price: number;
+    apply_taxes: boolean;
+}
+
 export interface Invoice {
     id: string;
+    organization_id: string;
     user_id: string;
+    issuer_id?: string;
+    recipient_id?: string;
     client_id?: string;
     provider_id?: string;
+    issuer_name?: string;
+    recipient_name?: string;
     invoice_number: string;
     invoice_type: 'sales' | 'purchase';
     issue_date: string;
@@ -15,25 +29,27 @@ export interface Invoice {
     status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
     description?: string;
     notes?: string;
+    items: InvoiceItem[];
     created_at: string;
     updated_at: string;
 }
 
 /**
- * Fetch all invoices for the current user
+ * Fetch all invoices for a specific organization
  */
-export const fetchInvoices = async () => {
+export const fetchInvoices = async (orgId: string) => {
     try {
         const { data, error } = await supabase
             .from('invoices')
             .select('*')
+            .eq('organization_id', orgId)
             .order('issue_date', { ascending: false });
 
         if (error) throw error;
-        return { data, error: null };
+        return { data: (data as Invoice[]) || [], error: null };
     } catch (error: any) {
         console.error('Error fetching invoices:', error);
-        return { data: null, error: error.message };
+        return { data: [], error: error.message };
     }
 };
 
@@ -49,7 +65,7 @@ export const fetchInvoiceById = async (id: string) => {
             .single();
 
         if (error) throw error;
-        return { data, error: null };
+        return { data: data as Invoice, error: null };
     } catch (error: any) {
         console.error('Error fetching invoice:', error);
         return { data: null, error: error.message };
@@ -68,11 +84,9 @@ export const createInvoice = async (invoice: Omit<Invoice, 'id' | 'user_id' | 'c
             .single();
 
         if (error) throw error;
-        toast.success('Invoice created successfully');
-        return { data, error: null };
+        return { data: data as Invoice, error: null };
     } catch (error: any) {
         console.error('Error creating invoice:', error);
-        toast.error(error.message || 'Failed to create invoice');
         return { data: null, error: error.message };
     }
 };
@@ -90,11 +104,9 @@ export const updateInvoice = async (id: string, updates: Partial<Invoice>) => {
             .single();
 
         if (error) throw error;
-        toast.success('Invoice updated successfully');
-        return { data, error: null };
+        return { data: data as Invoice, error: null };
     } catch (error: any) {
         console.error('Error updating invoice:', error);
-        toast.error(error.message || 'Failed to update invoice');
         return { data: null, error: error.message };
     }
 };
@@ -110,23 +122,22 @@ export const deleteInvoice = async (id: string) => {
             .eq('id', id);
 
         if (error) throw error;
-        toast.success('Invoice deleted successfully');
         return { error: null };
     } catch (error: any) {
         console.error('Error deleting invoice:', error);
-        toast.error(error.message || 'Failed to delete invoice');
         return { error: error.message };
     }
 };
 
 /**
- * Get invoice statistics
+ * Get invoice statistics for an organization
  */
-export const getInvoiceStats = async () => {
+export const getInvoiceStats = async (orgId: string) => {
     try {
         const { data, error } = await supabase
             .from('invoices')
-            .select('amount, status');
+            .select('amount, status')
+            .eq('organization_id', orgId);
 
         if (error) throw error;
 

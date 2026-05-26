@@ -45,7 +45,6 @@ export const createOrganization = async (input: CreateOrganizationInput): Promis
       .from('organizations')
       .insert({
         name: input.name,
-        type: input.type,
         business_name: input.business_name || null,
         business_email: input.business_email || null,
         business_phone: input.business_phone || null,

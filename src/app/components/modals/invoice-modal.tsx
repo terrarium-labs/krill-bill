@@ -2,6 +2,12 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/auth/AuthContext';
+import { useOrg } from '@/contexts/OrgContext';
+import { createInvoice } from '@/api/invoices';
+import { Invoice } from '@/api/invoices';
+import { fetchUserOrganizations } from '@/api/organizations';
+import { Organization } from '@/types/organization';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +17,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import InvoiceForm from './invoice-form';
+import InvoicePDFPreview from './invoice-pdf-preview';
 
 /**
  * Props for the {@link InvoiceModal} component.
@@ -18,14 +26,14 @@ import { Button } from '@/components/ui/button';
 export interface InvoiceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onInvoiceCreated?: () => void | Promise<void>;
+  onInvoiceCreated?: (invoice: Invoice) => void | Promise<void>;
   onClose?: () => void;
-  isSubmitting?: boolean;
 }
 
 /**
- * Modal for creating a new invoice.
- * Uses shadcn Dialog component with form validation.
+ * Modal for creating a new invoice with split layout.
+ * Left side: Form inputs
+ * Right side: PDF preview
  *
  * @example
  * ```tsx
@@ -33,7 +41,6 @@ export interface InvoiceModalProps {
  *   open={isOpen}
  *   onOpenChange={setIsOpen}
  *   onInvoiceCreated={handleSuccess}
- *   isSubmitting={isLoading}
  * />
  * ```
  */
@@ -42,144 +49,171 @@ export default function InvoiceModal({
   onOpenChange,
   onInvoiceCreated,
   onClose,
-  isSubmitting = false,
 }: InvoiceModalProps) {
   const { t } = useTranslation();
-  const [formData, setFormData] = React.useState({
-    clientName: '',
-    amount: '',
-    description: '',
+  const { user } = useAuth();
+  const { org } = useOrg();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [invoice, setInvoice] = React.useState<Partial<Invoice>>({
+    invoice_number: '',
+    invoice_type: 'sales',
+    issue_date: new Date().toISOString().split('T')[0],
+    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    amount: 0,
+    currency: org?.currency || 'EUR',
+    status: 'draft',
+    items: [],
+    issuer_id: org?.id,
+    issuer_name: org?.business_name || org?.name,
+    recipient_id: '',
+    recipient_name: '',
   });
 
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const submitButtonRef = React.useRef<HTMLButtonElement>(null);
+  // Fetch organizations when modal opens
+  React.useEffect(() => {
+    if (open) {
+      const loadOrganizations = async () => {
+        const { data } = await fetchUserOrganizations();
+        if (data) {
+          setOrganizations(data);
+        }
+      };
+      loadOrganizations();
+    }
+  }, [open]);
 
   const handleOpenChange = React.useCallback(
     (next: boolean) => {
       if (!next) {
         onClose?.();
+        // Reset form
+        setInvoice({
+          invoice_number: '',
+          invoice_type: 'sales',
+          issue_date: new Date().toISOString().split('T')[0],
+          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          amount: 0,
+          currency: org?.currency || 'EUR',
+          status: 'draft',
+          items: [],
+          issuer_id: org?.id,
+          issuer_name: org?.business_name || org?.name,
+          recipient_id: '',
+          recipient_name: '',
+        });
       }
       onOpenChange(next);
     },
-    [onClose, onOpenChange]
+    [onClose, onOpenChange, org?.currency, org?.id, org?.business_name, org?.name]
   );
 
   const handleSubmit = React.useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      const newErrors: Record<string, string> = {};
 
-      if (!formData.clientName.trim()) {
-        newErrors.clientName = t('invoices.errors.clientNameRequired', 'Client name is required');
-      }
-
-      if (!formData.amount.trim()) {
-        newErrors.amount = t('invoices.errors.amountRequired', 'Amount is required');
-      } else if (isNaN(parseFloat(formData.amount))) {
-        newErrors.amount = t('invoices.errors.amountInvalid', 'Amount must be a valid number');
-      }
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
+      if (!invoice.invoice_number?.trim()) {
+        toast.error(t('invoices.errors.invoiceNumberRequired', 'Invoice number is required'));
         return;
       }
 
+      if (!invoice.issuer_name?.trim()) {
+        toast.error(t('invoices.errors.issuerRequired', 'Issuer name is required'));
+        return;
+      }
+
+      if (!invoice.recipient_name?.trim()) {
+        toast.error(t('invoices.errors.recipientRequired', 'Recipient name is required'));
+        return;
+      }
+
+      if (!invoice.issue_date) {
+        toast.error(t('invoices.errors.issueDateRequired', 'Issue date is required'));
+        return;
+      }
+
+      if (!invoice.items || invoice.items.length === 0) {
+        toast.error(t('invoices.errors.noItems', 'Add at least one item to the invoice'));
+        return;
+      }
+
+      if (!user || !org) {
+        toast.error(t('errors.userOrOrgNotFound', 'User or organization not found'));
+        return;
+      }
+
+      setIsSubmitting(true);
       try {
-        // TODO: Create invoice via API
-        await onInvoiceCreated?.();
-        toast.success(t('invoices.createdSuccess', 'Invoice created successfully'));
-        setFormData({ clientName: '', amount: '', description: '' });
-        setErrors({});
-        onClose?.();
-        onOpenChange(false);
+        const invoiceData: Omit<Invoice, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
+          organization_id: org.id,
+          client_id: invoice.client_id,
+          issuer_id: (invoice.issuer_id && invoice.issuer_id !== 'manual-entry') ? invoice.issuer_id : undefined,
+          recipient_id: (invoice.recipient_id && invoice.recipient_id !== 'manual-entry') ? invoice.recipient_id : undefined,
+          issuer_name: invoice.issuer_name,
+          recipient_name: invoice.recipient_name,
+          invoice_number: invoice.invoice_number,
+          invoice_type: invoice.invoice_type || 'sales',
+          issue_date: invoice.issue_date,
+          due_date: invoice.due_date,
+          amount: invoice.amount || 0,
+          currency: invoice.currency || org.currency,
+          status: 'draft',
+          description: invoice.description,
+          items: invoice.items || [],
+        };
+
+        const { data: createdInvoice, error } = await createInvoice(invoiceData);
+
+        if (error) {
+          toast.error(error);
+          return;
+        }
+
+        if (createdInvoice) {
+          toast.success(t('toasts.invoiceCreated', 'Invoice created successfully'));
+          await onInvoiceCreated?.(createdInvoice);
+          handleOpenChange(false);
+        }
       } catch (error) {
-        toast.error(t('invoices.createError', 'Failed to create invoice'));
+        console.error('Error creating invoice:', error);
+        toast.error(t('errors.creatingInvoice', 'Failed to create invoice'));
+      } finally {
+        setIsSubmitting(false);
       }
     },
-    [formData, onInvoiceCreated, t, onClose, onOpenChange]
+    [invoice, user, org, t, onInvoiceCreated, handleOpenChange]
   );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
-        onOpenAutoFocus={(e) => {
-          e.preventDefault();
-          submitButtonRef.current?.focus();
-        }}
-      >
-        <DialogHeader>
+      <DialogContent className="max-w-7xl  md:min-w-7xl w-full  w-[95vw] h-[95vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle>{t('invoices.createInvoice', 'Create Invoice')}</DialogTitle>
           <DialogDescription>
             {t('invoices.createInvoiceDescription', 'Create a new invoice for your client')}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Client Name */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('common.clientName', 'Client Name')}
-            </label>
-            <input
-              type="text"
-              value={formData.clientName}
-              onChange={(e) =>
-                setFormData({ ...formData, clientName: e.target.value })
-              }
-              disabled={isSubmitting}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-background text-foreground ${
-                errors.clientName
-                  ? 'border-destructive focus:ring-destructive'
-                  : 'border-border focus:ring-ring'
-              }`}
-              placeholder={t('invoices.placeholders.clientName', 'e.g., Acme Inc.')}
-            />
-            {errors.clientName && (
-              <p className="text-destructive text-sm mt-1">{errors.clientName}</p>
-            )}
-          </div>
+        <form onSubmit={handleSubmit} className="flex-1 flex min-h-0 overflow-hidden">
+          {/* Responsive Grid Container */}
+          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {/* Left Side - Form */}
+            <div className="overflow-hidden flex flex-col border-b lg:border-b-0 lg:border-r border-border">
+              <div className="px-6 py-4 overflow-y-auto">
+                <InvoiceForm invoice={invoice} onInvoiceChange={setInvoice} organizations={organizations} />
+              </div>
+            </div>
 
-          {/* Amount */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('common.amount', 'Amount')}
-            </label>
-            <input
-              type="text"
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              disabled={isSubmitting}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-background text-foreground ${
-                errors.amount
-                  ? 'border-destructive focus:ring-destructive'
-                  : 'border-border focus:ring-ring'
-              }`}
-              placeholder={t('invoices.placeholders.amount', '0.00')}
-            />
-            {errors.amount && (
-              <p className="text-destructive text-sm mt-1">{errors.amount}</p>
-            )}
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('common.description', 'Description')}
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              rows={3}
-              placeholder={t('invoices.placeholders.description', 'Invoice description')}
-            />
+            {/* Right Side - PDF Preview */}
+            <div className="overflow-hidden flex flex-col">
+              <div className="px-6 py-4 overflow-y-auto">
+                <InvoicePDFPreview invoice={invoice} businessName={org?.business_name || org?.name} />
+              </div>
+            </div>
           </div>
         </form>
 
-        <DialogFooter>
+        <DialogFooter className="px-6 py-4 border-t border-border">
           <Button
             type="button"
             variant="outline"
@@ -189,11 +223,10 @@ export default function InvoiceModal({
             {t('common.cancel', 'Cancel')}
           </Button>
           <Button
-            ref={submitButtonRef}
             type="button"
             variant="theme"
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !invoice.invoice_number || !invoice.issuer_name || !invoice.recipient_name || !invoice.items || invoice.items.length === 0}
           >
             {isSubmitting ? (
               <>
@@ -201,7 +234,7 @@ export default function InvoiceModal({
                 {t('common.creating', 'Creating...')}
               </>
             ) : (
-              t('common.create', 'Create')
+              t('common.create', 'Create Invoice')
             )}
           </Button>
         </DialogFooter>

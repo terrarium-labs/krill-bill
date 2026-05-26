@@ -1,10 +1,9 @@
-export type OrganizationType = 'mine' | 'client' | 'provider'
+export type OrgPartnerType = 'client' | 'provider'
 export type OrgMemberRole = 'owner' | 'admin' | 'member'
 
 export interface Organization {
   id: string
   name: string
-  type: OrganizationType
   business_name?: string | null
   business_email?: string | null
   business_phone?: string | null
@@ -17,6 +16,15 @@ export interface Organization {
   country: string
   currency: string
   language: string
+  created_at: string
+  updated_at: string
+}
+
+export interface OrganizationPartner {
+  id: string
+  organization_id: string
+  partner_organization_id: string
+  partner_type: OrgPartnerType
   created_at: string
   updated_at: string
 }
@@ -35,7 +43,6 @@ export interface OrgMember {
 
 export interface CreateOrganizationInput {
   name: string
-  type: OrganizationType
   business_name?: string
   business_email?: string
   business_phone?: string
@@ -48,4 +55,9 @@ export interface CreateOrganizationInput {
   country?: string
   currency?: string
   language?: string
+}
+
+export interface CreateOrganizationPartnerInput {
+  partner_organization_id: string
+  partner_type: OrgPartnerType
 }

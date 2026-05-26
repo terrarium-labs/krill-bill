@@ -83,7 +83,6 @@ export default function OrgSelectionPage() {
     try {
       const { data, error } = await createOrganization({
         name: newOrgName,
-        type: 'mine',
         business_name: newOrgName,
         country: 'ES',
         currency: 'EUR',
