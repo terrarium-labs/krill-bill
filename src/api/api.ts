@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase
+import { supabase } from "@/lib/supabase";
 
 const DEBUG = process.env.NODE_ENV === "development";
 /**

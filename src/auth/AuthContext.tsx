@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loginWithGoogle,
         loginWithMicrosoft,
         refreshToken
-    }), [user, session, loading])
+    }), [user, session, loading, signIn, signUp, resetPassword, updatePassword, signOut, loginWithGoogle, loginWithMicrosoft, refreshToken])
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

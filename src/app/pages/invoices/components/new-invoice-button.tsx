@@ -3,18 +3,18 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Invoice } from '@/api/invoices';
-import InvoiceModal from '@/app/components/modals/invoice-modal';
+import InvoiceModal from '@/app/pages/invoices/components/invoice-modal';
 
 export interface NewInvoiceButtonProps {
-  onInvoiceCreated?: (invoice: Invoice) => void | Promise<void>;
+  onSubmit?: (invoice: Invoice) => void | Promise<void>;
 }
 
-export default function NewInvoiceButton({ onInvoiceCreated }: NewInvoiceButtonProps) {
+export default function NewInvoiceButton({ onSubmit }: NewInvoiceButtonProps) {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleInvoiceCreated = async (invoice: Invoice) => {
-    await onInvoiceCreated?.(invoice);
+    await onSubmit?.(invoice);
     setModalOpen(false);
   };
 
@@ -31,7 +31,7 @@ export default function NewInvoiceButton({ onInvoiceCreated }: NewInvoiceButtonP
       <InvoiceModal 
         open={modalOpen} 
         onOpenChange={setModalOpen}
-        onInvoiceCreated={handleInvoiceCreated}
+        onSubmit={handleInvoiceCreated}
       />
     </>
   );

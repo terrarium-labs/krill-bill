@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import { Outlet } from 'react-router';
 import { useNavigate } from 'react-router';
 import { UserCircle } from 'lucide-react';
 import {
@@ -15,6 +14,7 @@ import { ChatPanel } from '@/app/components/chat-panel';
 import { UnsavedChangesGlobalModal } from '@/app/components/modals/unsaved-changes-modal';
 import { Button } from '@/components/ui/button';
 import { OrgContext } from '@/contexts/OrgContext';
+import AppRoutes from '@/app/AppRoutes';
 
 const OrgSelectorFooter = () => {
     const navigate = useNavigate();
@@ -34,8 +34,10 @@ const OrgSelectorFooter = () => {
             <Button
                 variant="theme-secondary"
                 onClick={() => {
-                    localStorage.removeItem('selectedOrgId');
-                    localStorage.removeItem('selectedOrgName');
+                    // Save current org before navigating away
+                    if (org?.id) {
+                        localStorage.setItem('selectedOrgId', org.id);
+                    }
                     navigate('/orgs');
                 }}
                 title={orgName}
@@ -76,7 +78,7 @@ export default function MainLayout() {
 
                     <main className="flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto scrollbar-hide">
                         <div className="max-w-7xl mx-auto w-full md:px-6 py-6">
-                            <Outlet />
+                            <AppRoutes />
                         </div>
                     </main>
                 </div>

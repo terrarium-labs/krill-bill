@@ -6,24 +6,6 @@ import { Client } from '@/types/clients';
  */
 export const fetchOrgClients = async (orgId: string): Promise<{ data: Client[] | null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify user has access to this org
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('*')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember) {
-      console.error('API: User does not have access to org:', orgId);
-      return { data: null, error: 'Access denied' };
-    }
-
     const { data, error } = await supabase
       .from('clients')
       .select('*')
@@ -49,23 +31,6 @@ export const fetchOrgClients = async (orgId: string): Promise<{ data: Client[] |
  */
 export const fetchClientById = async (orgId: string, clientId: string): Promise<{ data: Client | null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('*')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember) {
-      return { data: null, error: 'Access denied' };
-    }
-
     const { data, error } = await supabase
       .from('clients')
       .select('*')
@@ -91,23 +56,6 @@ export const fetchClientById = async (orgId: string, clientId: string): Promise<
  */
 export const createClient = async (orgId: string, clientData: Omit<Client, 'id' | 'org_id' | 'created_at' | 'updated_at'>): Promise<{ data: Client | null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access and permission
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember) {
-      return { data: null, error: 'Access denied' };
-    }
-
     const { data, error } = await supabase
       .from('clients')
       .insert([{ ...clientData, org_id: orgId }])
@@ -133,23 +81,6 @@ export const createClient = async (orgId: string, clientData: Omit<Client, 'id' 
  */
 export const updateClient = async (orgId: string, clientId: string, updates: Partial<Client>): Promise<{ data: null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access and admin permission
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember || !['owner', 'admin'].includes(orgMember.role)) {
-      return { data: null, error: 'Permission denied' };
-    }
-
     const { error } = await supabase
       .from('clients')
       .update(updates)
@@ -175,23 +106,6 @@ export const updateClient = async (orgId: string, clientId: string, updates: Par
  */
 export const deleteClient = async (orgId: string, clientId: string): Promise<{ data: null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access and admin permission
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember || !['owner', 'admin'].includes(orgMember.role)) {
-      return { data: null, error: 'Permission denied' };
-    }
-
     const { error } = await supabase
       .from('clients')
       .delete()

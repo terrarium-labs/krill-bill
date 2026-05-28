@@ -1,36 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { useOrg } from '@/contexts/OrgContext';
 import { fetchOrgClients } from '@/api/clients';
 import { Client } from '@/types/clients';
+import { PageSkeleton } from '@/components/ui/page-skeleton';
 
-interface UseClientsReturn {
+interface ClientsContextType {
   clients: Client[];
   isLoading: boolean;
-  error: string | null;
   refreshClients: () => Promise<void>;
 }
 
-export const useClients = (): UseClientsReturn => {
+const ClientsContext = createContext<ClientsContextType | undefined>(undefined);
+
+export const ClientsProvider = ({ children }: { children: React.ReactNode }) => {
   const { org } = useOrg();
   const [clients, setClients] = useState<Client[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const isFetchingRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchClients = async () => {
-    if (!org?.id || isFetchingRef.current) return;
-
-    isFetchingRef.current = true;
-
+    if (!org?.id) return;
     try {
       setIsLoading(true);
-      setError(null);
       console.log('Fetching clients for org:', org.id);
 
       const { data, error: fetchError } = await fetchOrgClients(org.id);
       if (fetchError) {
         console.error('Error fetching clients:', fetchError);
-        setError(fetchError);
         setClients([]);
         return;
       }
@@ -42,11 +37,9 @@ export const useClients = (): UseClientsReturn => {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load clients';
       console.error('Error:', message);
-      setError(message);
       setClients([]);
     } finally {
       setIsLoading(false);
-      isFetchingRef.current = false;
     }
   };
 
@@ -56,18 +49,31 @@ export const useClients = (): UseClientsReturn => {
     }
   }, [org?.id]);
 
-  const refreshClients = async () => {
-    if (!org?.id) return;
-    const { data, error: fetchError } = await fetchOrgClients(org.id);
-    if (!fetchError && data) {
-      setClients(data);
-    }
-  };
+  const refreshClients = useCallback(async () => {
+    await fetchClients();
+  }, []);
 
-  return {
+  const contextValue = useMemo(() => ({
     clients,
     isLoading,
-    error,
     refreshClients,
-  };
+  }), [clients, isLoading, refreshClients]);
+
+  if (isLoading && clients.length === 0) {
+    return <PageSkeleton showBackButton={true} showIcon={true} tabCount={2} variant="split" />;
+  }
+
+  return (
+    <ClientsContext.Provider value={contextValue}>
+      {children}
+    </ClientsContext.Provider>
+  );
+};
+
+export const useClients = () => {
+  const context = useContext(ClientsContext);
+  if (context === undefined) {
+    throw new Error('useClients must be used within a ClientsProvider');
+  }
+  return context;
 };

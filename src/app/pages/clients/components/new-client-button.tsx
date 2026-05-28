@@ -2,16 +2,18 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import ClientModal from '@/app/components/modals/client-modal';
-import { useClients } from '@/contexts/ClientsContext';
+import ClientModal from '@/app/pages/clients/components/client-modal';
 
-export default function NewClientButton() {
+interface NewClientButtonProps {
+  onSubmit?: () => Promise<void>;
+}
+
+export default function NewClientButton({ onSubmit }: NewClientButtonProps) {
   const { t } = useTranslation();
-  const { refreshClients } = useClients();
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleClientCreated = async () => {
-    await refreshClients();
+    await onSubmit?.();
     setModalOpen(false);
   };
 
@@ -25,7 +27,7 @@ export default function NewClientButton() {
         <Plus size={18} />
         {t('pages.clients.newClient')}
       </Button>
-      <ClientModal open={modalOpen} onOpenChange={setModalOpen} onClientCreated={handleClientCreated} />
+      <ClientModal open={modalOpen} onOpenChange={setModalOpen} onSubmit={handleClientCreated} />
     </>
   );
 }

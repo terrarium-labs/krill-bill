@@ -1,15 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import PageHeader from '@/app/components/page-header';
-import NewProviderButton from '@/app/components/buttons/new-provider-button';
-import ProvidersTable from '@/app/components/tables/providers-table';
-import ProviderModal from '@/app/components/modals/provider-modal';
-import { useProviders } from '@/contexts/ProvidersContext';
+import NewProviderButton from '@/app/pages/providers/components/new-provider-button';
+import ProvidersTable from '@/app/pages/providers/components/providers-table';
+import ProviderModal from '@/app/pages/providers/components/provider-modal';
+import { useProviders } from '@/app/pages/providers/contexts/ProvidersContext';
 import { Provider } from '@/types/providers';
 
 export default function ProvidersPage() {
   const { t } = useTranslation();
-  const { refreshProviders } = useProviders();
+  const { providers, isLoading, refreshProviders } = useProviders();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
 
@@ -33,16 +33,16 @@ export default function ProvidersPage() {
             description={t('pages.providers.description')}
           />
         </div>
-        <NewProviderButton />
+        <NewProviderButton onSubmit={refreshProviders} />
       </div>
 
-      <ProvidersTable onEdit={handleEditProvider} />
+      <ProvidersTable providers={providers} isLoading={isLoading} onRefresh={refreshProviders} onEdit={handleEditProvider} />
 
       <ProviderModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         provider={selectedProvider || undefined}
-        onProviderCreated={handleProviderCreated}
+        onSubmit={handleProviderCreated}
       />
     </div>
   );

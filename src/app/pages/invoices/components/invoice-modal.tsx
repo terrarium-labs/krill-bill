@@ -15,8 +15,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import InvoiceForm from './invoice-form';
-import InvoicePDFPreview from './invoice-pdf-preview';
+import InvoiceForm from '@/app/pages/invoices/components/invoice-pdf-preview';
+import InvoicePDFPreview from '@/app/pages/invoices/components/invoice-pdf-preview';
 
 /**
  * Props for the {@link InvoiceModal} component.
@@ -24,7 +24,7 @@ import InvoicePDFPreview from './invoice-pdf-preview';
 export interface InvoiceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onInvoiceCreated?: (invoice: Invoice) => void | Promise<void>;
+  onSubmit?: (invoice: Invoice) => void | Promise<void>;
   onClose?: () => void;
 }
 
@@ -38,14 +38,14 @@ export interface InvoiceModalProps {
  * <InvoiceModal
  *   open={isOpen}
  *   onOpenChange={setIsOpen}
- *   onInvoiceCreated={handleSuccess}
+ *   onSubmit={handleSuccess}
  * />
  * ```
  */
 export default function InvoiceModal({
   open,
   onOpenChange,
-  onInvoiceCreated,
+  onSubmit,
   onClose,
 }: InvoiceModalProps) {
   const { t } = useTranslation();
@@ -156,7 +156,7 @@ export default function InvoiceModal({
         if (createdInvoice) {
           toast.success(t('toasts.invoiceCreated', 'Invoice created successfully'));
           await new Promise(resolve => setTimeout(resolve, 500));
-          await onInvoiceCreated?.(createdInvoice);
+          await onSubmit?.(createdInvoice);
           handleOpenChange(false);
         }
       } catch (error) {
@@ -166,7 +166,7 @@ export default function InvoiceModal({
         setIsSubmitting(false);
       }
     },
-    [invoice, user, org, t, onInvoiceCreated, handleOpenChange]
+    [invoice, user, org, t, onSubmit, handleOpenChange]
   );
 
   return (

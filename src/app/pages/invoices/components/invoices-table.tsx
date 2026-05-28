@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trash2, Eye, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { useInvoices } from '@/contexts/InvoicesContext';
 import { deleteInvoice } from '@/api/invoices';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -27,10 +26,25 @@ const statusColors: Record<string, string> = {
   cancelled: 'bg-yellow-100 text-yellow-800',
 };
 
-export default function InvoicesTable() {
+interface Invoice {
+  id: string;
+  invoice_number: string;
+  recipient_name?: string;
+  issue_date: string;
+  amount: number;
+  currency: string;
+  status: string;
+}
+
+interface InvoicesTableProps {
+  invoices: Invoice[];
+  isLoading: boolean;
+  onRefresh: () => Promise<void>;
+}
+
+export default function InvoicesTable({ invoices, isLoading, onRefresh }: InvoicesTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { invoices, isLoading, refreshInvoices } = useInvoices();
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedInvoiceToDelete, setSelectedInvoiceToDelete] = useState<typeof invoices[0] | null>(null);
@@ -50,7 +64,7 @@ export default function InvoicesTable() {
         toast.error(error);
       } else {
         toast.success(t('invoices.deletedSuccess', 'Invoice deleted successfully'));
-        await refreshInvoices();
+        await onRefresh();
         setDeleteModalOpen(false);
       }
     } catch (error) {

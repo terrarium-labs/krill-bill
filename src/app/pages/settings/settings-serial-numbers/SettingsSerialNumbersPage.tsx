@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import PageHeader from '@/app/components/page-header';
-import SerialNumbersTable from '../../components/tables/serial-numbers-table';
-import SerialNumberModal from '../../components/modals/serial-number-modal';
+import SerialNumbersTable from './components/serial-numbers-table';
+import SerialNumberModal from './components/serial-number-modal';
 import { DeleteModal } from '@/app/components/modals/delete-modal';
 import { SerialNumber } from '@/types/serial-numbers';
 

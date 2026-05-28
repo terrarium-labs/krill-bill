@@ -8,11 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { DeleteModal } from '@/app/components/modals/delete-modal';
 import PageHeader from '@/app/components/page-header';
-import InvoicePDFPreview from '@/app/components/modals/invoice-pdf-preview';
+import InvoicePDFPreview from '@/app/pages/invoices/components/invoice-pdf-preview';
 import { format } from 'date-fns';
 
 export default function InvoiceDetailPage() {
-  const { id } = useParams();
+  const { invoiceId: id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [invoice, setInvoice] = useState<Invoice | null>(null);

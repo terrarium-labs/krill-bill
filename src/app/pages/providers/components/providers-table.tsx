@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, Eye, Edit2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useOrg } from '@/contexts/OrgContext';
-import { useProviders } from '@/contexts/ProvidersContext';
 import { deleteProvider } from '@/api/providers';
 import { Provider } from '@/types/providers';
 import { Button } from '@/components/ui/button';
@@ -20,14 +19,16 @@ import {
 import { Card } from '@/components/ui/card';
 
 interface ProvidersTableProps {
+  providers: Provider[];
+  isLoading: boolean;
+  onRefresh: () => Promise<void>;
   onEdit?: (provider: Provider) => void;
 }
 
-export default function ProvidersTable({ onEdit }: ProvidersTableProps) {
+export default function ProvidersTable({ providers, isLoading, onRefresh, onEdit }: ProvidersTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { org } = useOrg();
-  const { providers, isLoading, refreshProviders } = useProviders();
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedProviderToDelete, setSelectedProviderToDelete] = useState<Provider | null>(null);
@@ -47,7 +48,7 @@ export default function ProvidersTable({ onEdit }: ProvidersTableProps) {
         toast.error(error);
       } else {
         toast.success(t('providers.deletedSuccess', 'Provider deleted successfully'));
-        await refreshProviders();
+        await onRefresh();
         setDeleteModalOpen(false);
       }
     } catch (error) {

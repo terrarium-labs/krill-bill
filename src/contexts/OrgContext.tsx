@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { useAuth } from '@/auth/AuthContext';
 import { fetchOrganization } from '@/api/organizations';
 import { getOrgMember } from '@/api/org-members';
@@ -21,18 +21,14 @@ interface OrgProviderProps {
 
 export const OrgProvider = ({ children, orgId }: OrgProviderProps) => {
   const { user, loading: authLoading } = useAuth();
+  
   const [org, setOrg] = useState<Organization | null>(null);
   const [preferences, setPreferences] = useState<OrgMember | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const isFetchingRef = useRef(false);
-  const hasInitializedRef = useRef(false);
 
   const fetchOrgData = async () => {
-    if (!user || !orgId || isFetchingRef.current) return;
-
-    // Set flag to prevent duplicate requests
-    isFetchingRef.current = true;
+    if (!user?.id || !orgId) return;
 
     try {
       setIsLoading(true);
@@ -79,31 +75,37 @@ export const OrgProvider = ({ children, orgId }: OrgProviderProps) => {
       setPreferences(null);
     } finally {
       setIsLoading(false);
-      isFetchingRef.current = false;
     }
   };
 
-  // Only fetch on initial mount or when orgId changes, not on every user object change
+  // Fetch from API when orgId changes
   useEffect(() => {
-    if (!authLoading && user && orgId && !hasInitializedRef.current) {
-      hasInitializedRef.current = true;
+    if (!authLoading && user?.id && orgId) {
       fetchOrgData();
     }
-  }, [orgId, authLoading]); // Only depend on orgId and authLoading, not user object
+  }, [orgId, authLoading, user?.id]);
 
   const refreshOrg = useCallback(async () => {
     if (!orgId) return;
-    const { data, error } = await fetchOrganization(orgId);
-    if (!error && data) {
-      setOrg(data);
+    try {
+      const { data, error } = await fetchOrganization(orgId);
+      if (!error && data) {
+        setOrg(data);
+      }
+    } catch (err) {
+      console.error('OrgProvider: Error refreshing org:', err);
     }
   }, [orgId]);
 
   const refreshPreferences = useCallback(async () => {
     if (!orgId || !user?.id) return;
-    const { data, error } = await getOrgMember(orgId, user.id);
-    if (!error && data) {
-      setPreferences(data);
+    try {
+      const { data, error } = await getOrgMember(orgId, user.id);
+      if (!error && data) {
+        setPreferences(data);
+      }
+    } catch (err) {
+      console.error('OrgProvider: Error refreshing preferences:', err);
     }
   }, [orgId, user?.id]);
 

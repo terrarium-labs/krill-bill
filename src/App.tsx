@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router';
+import { createBrowserRouter, RouterProvider, Navigate, useParams } from 'react-router';
 import { Loader2Icon } from 'lucide-react';
 import { AppProvider } from '@/contexts/app-context';
 import { AuthProvider } from '@/auth/AuthContext';
@@ -21,8 +21,8 @@ import LogInPage from '@/auth/pages/LogInPage';
 import SignUpPage from '@/auth/pages/SignUpPage';
 import RecoverPasswordPage from '@/auth/pages/RecoverPasswordPage';
 import ResetPasswordPage from '@/auth/pages/ResetPasswordPage';
-import OrgSelectionPage from '@/app/pages/OrgSelectionPage';
-import SettingsProfilePage from '@/app/pages/settings/SettingsProfilePage';
+
+// Pages and routes
 
 // Loading fallback
 const LoadingSpinner = () => (
@@ -31,10 +31,9 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Root component that checks auth and org selection
-const RootApp = () => {
+// Component to handle root path redirect
+const RootRedirect = () => {
   const { user, loading } = useAuth();
-  const selectedOrgId = localStorage.getItem('selectedOrgId');
 
   if (loading) {
     return <LoadingSpinner />;
@@ -44,13 +43,26 @@ const RootApp = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!selectedOrgId) {
+  // Check for selected org in localStorage
+  const selectedOrgId = localStorage.getItem('selectedOrgId');
+  if (selectedOrgId) {
+    return <Navigate to={`/orgs/${selectedOrgId}`} replace />;
+  }
+
+  // No selected org, redirect to orgs page to select one
+  return <Navigate to="/orgs" replace />;
+};
+
+// Layout for org routes with OrgProvider and UserProvider
+const OrgRoutesLayout = () => {
+  const { orgId } = useParams<{ orgId: string }>();
+  
+  if (!orgId) {
     return <Navigate to="/orgs" replace />;
   }
 
-  // User is authenticated and has selected an org, render the protected layout
   return (
-    <OrgProvider orgId={selectedOrgId} key={selectedOrgId}>
+    <OrgProvider orgId={orgId}>
       <UserProvider>
         <MainLayout />
       </UserProvider>
@@ -58,84 +70,22 @@ const RootApp = () => {
   );
 };
 
-// Import pages for routing
-import DashboardPage from '@/app/pages/DashboardPage';
-import InvoicesPage from '@/app/pages/invoices/InvoicesPage';
-import ClientsPage from '@/app/pages/clients/ClientsPage';
-import ProvidersPage from '@/app/pages/providers/ProvidersPage';
-import SettingsGeneralPage from '@/app/pages/settings/SettingsGeneralPage';
-import SettingsSerialNumbersPage from '@/app/pages/settings/SettingsSerialNumbersPage';
-
-// Create router with all routes and error boundaries
+// Create router with explicit routes and AuthProvider wrapping
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
       <AuthProvider>
-        <AuthGuard requireAuth>
-          <RootApp />
-        </AuthGuard>
+        <RootRedirect />
       </AuthProvider>
     ),
     errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <DashboardPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'invoices',
-        element: <InvoicesPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'invoices/:id',
-        element: <InvoicesPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'clients',
-        element: <ClientsPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'clients/:id',
-        element: <ClientsPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'providers',
-        element: <ProvidersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'providers/:id',
-        element: <ProvidersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'settings/general',
-        element: <SettingsGeneralPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'settings/serial-numbers',
-        element: <SettingsSerialNumbersPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-      {
-        path: 'settings/profile',
-        element: <SettingsProfilePage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
   },
   {
     path: '/login',
     element: (
       <AuthProvider>
-        <AuthGuard>
+        <AuthGuard requireAuth={false}>
           <LogInPage />
         </AuthGuard>
       </AuthProvider>
@@ -146,7 +96,7 @@ const router = createBrowserRouter([
     path: '/signup',
     element: (
       <AuthProvider>
-        <AuthGuard>
+        <AuthGuard requireAuth={false}>
           <SignUpPage />
         </AuthGuard>
       </AuthProvider>
@@ -157,7 +107,7 @@ const router = createBrowserRouter([
     path: '/recover-password',
     element: (
       <AuthProvider>
-        <AuthGuard>
+        <AuthGuard requireAuth={false}>
           <RecoverPasswordPage />
         </AuthGuard>
       </AuthProvider>
@@ -168,7 +118,7 @@ const router = createBrowserRouter([
     path: '/reset-password',
     element: (
       <AuthProvider>
-        <AuthGuard requireAuth>
+        <AuthGuard requireAuth={true}>
           <ResetPasswordPage />
         </AuthGuard>
       </AuthProvider>
@@ -179,19 +129,27 @@ const router = createBrowserRouter([
     path: '/orgs',
     element: (
       <AuthProvider>
-        <AuthGuard requireAuth>
-          <OrgSelectionLayout />
+        <AuthGuard requireAuth={true}>
+          <UserProvider>
+            <OrgSelectionLayout />
+          </UserProvider>
         </AuthGuard>
       </AuthProvider>
     ),
     errorElement: <RouteErrorFallback />,
-    children: [
-      {
-        index: true,
-        element: <OrgSelectionPage />,
-        errorElement: <RouteErrorFallback />,
-      },
-    ],
+  },
+  {
+    path: '/orgs/:orgId/*',
+    element: (
+      <AuthProvider>
+        <AuthGuard requireAuth={true}>
+          <AppProvider>
+            <OrgRoutesLayout />
+          </AppProvider>
+        </AuthGuard>
+      </AuthProvider>
+    ),
+    errorElement: <RouteErrorFallback />,
   },
 ]);
 
@@ -199,12 +157,10 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <AppProvider>
-          <Toaster position="top-right" />
-          <Suspense fallback={<LoadingSpinner />}>
-            <RouterProvider router={router} />
-          </Suspense>
-        </AppProvider>
+        <Toaster position="top-right" richColors />
+        <Suspense fallback={<LoadingSpinner />}>
+          <RouterProvider router={router} />
+        </Suspense>
       </ThemeProvider>
     </ErrorBoundary>
   );

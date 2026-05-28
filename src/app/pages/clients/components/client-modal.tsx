@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOrg } from '@/contexts/OrgContext';
-import { createProvider, updateProvider } from '@/api/providers';
-import { Provider } from '@/types/providers';
+import { createClient, updateClient } from '@/api/clients';
+import { Client } from '@/types/clients';
 import {
   Dialog,
   DialogContent,
@@ -15,24 +15,24 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-export interface ProviderModalProps {
+export interface ClientModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  provider?: Provider;
-  onProviderCreated?: () => void | Promise<void>;
+  client?: Client;
+  onSubmit?: () => void | Promise<void>;
   onClose?: () => void;
 }
 
-export default function ProviderModal({
+export default function ClientModal({
   open,
   onOpenChange,
-  provider,
-  onProviderCreated,
+  client,
+  onSubmit,
   onClose,
-}: ProviderModalProps) {
+}: ClientModalProps) {
   const { t } = useTranslation();
   const { org } = useOrg();
-  const [formData, setFormData] = React.useState<Partial<Provider>>({
+  const [formData, setFormData] = React.useState<Partial<Client>>({
     name: '',
     business_name: '',
     business_email: '',
@@ -53,8 +53,8 @@ export default function ProviderModal({
   const [errors, setErrors] = React.useState<Record<string, string>>({});
 
   React.useEffect(() => {
-    if (provider) {
-      setFormData(provider);
+    if (client) {
+      setFormData(client);
     } else {
       setFormData({
         name: '',
@@ -74,7 +74,7 @@ export default function ProviderModal({
       });
     }
     setErrors({});
-  }, [provider, open, org]);
+  }, [client, open, org]);
 
   const handleOpenChange = React.useCallback(
     (next: boolean) => {
@@ -93,11 +93,11 @@ export default function ProviderModal({
       const newErrors: Record<string, string> = {};
 
       if (!formData.name?.trim()) {
-        newErrors.name = t('providers.errors.nameRequired', 'Provider name is required');
+        newErrors.name = t('clients.errors.nameRequired', 'Client name is required');
       }
 
       if (formData.business_email && !formData.business_email.includes('@')) {
-        newErrors.business_email = t('providers.errors.invalidEmail', 'Please enter a valid email address');
+        newErrors.business_email = t('clients.errors.invalidEmail', 'Please enter a valid email address');
       }
 
       if (Object.keys(newErrors).length > 0) {
@@ -112,21 +112,21 @@ export default function ProviderModal({
 
       setIsSubmitting(true);
       try {
-        if (provider?.id) {
-          const { error } = await updateProvider(org.id, provider.id, formData);
+        if (client?.id) {
+          const { error } = await updateClient(org.id, client.id, formData);
           if (error) {
             toast.error(error);
           } else {
-            toast.success(t('providers.updatedSuccess', 'Provider updated successfully'));
-            await onProviderCreated?.();
+            toast.success(t('clients.updatedSuccess', 'Client updated successfully'));
+            await onSubmit?.();
             handleOpenChange(false);
           }
         } else {
-          const { error } = await createProvider(org.id, formData as Omit<Provider, 'id' | 'org_id' | 'created_at' | 'updated_at'>);
+          const { error } = await createClient(org.id, formData as Omit<Client, 'id' | 'org_id' | 'created_at' | 'updated_at'>);
           if (error) {
             toast.error(error);
           } else {
-            toast.success(t('providers.createdSuccess', 'Provider created successfully'));
+            toast.success(t('clients.createdSuccess', 'Client created successfully'));
             setFormData({
               name: '',
               business_name: '',
@@ -144,32 +144,32 @@ export default function ProviderModal({
               default_due_days: 30,
             });
             await new Promise(resolve => setTimeout(resolve, 500));
-            await onProviderCreated?.();
+            await onSubmit?.();
             handleOpenChange(false);
           }
         }
       } catch (error) {
-        toast.error(t(provider?.id ? 'providers.updateError' : 'providers.createError', 'Failed to save provider'));
+        toast.error(t(client?.id ? 'clients.updateError' : 'clients.createError', 'Failed to save client'));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [formData, provider, onProviderCreated, t, org?.id, handleOpenChange]
+    [formData, client, onSubmit, t, org?.id, handleOpenChange]
   );
 
-  const isEditing = !!provider?.id;
+  const isEditing = !!client?.id;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? t('providers.editProvider', 'Edit Provider') : t('providers.createProvider', 'Create Provider')}
+            {isEditing ? t('clients.editClient', 'Edit Client') : t('clients.createClient', 'Create Client')}
           </DialogTitle>
           <DialogDescription>
             {isEditing 
-              ? t('providers.editProviderDescription', 'Update provider information')
-              : t('providers.createProviderDescription', 'Add a new provider to your system')
+              ? t('clients.editClientDescription', 'Update client information')
+              : t('clients.createClientDescription', 'Add a new client to your system')
             }
           </DialogDescription>
         </DialogHeader>
@@ -191,7 +191,7 @@ export default function ProviderModal({
                     ? 'border-destructive focus:ring-destructive'
                     : 'border-border focus:ring-ring'
                 }`}
-                placeholder={t('providers.placeholders.name', 'e.g., John Doe')}
+                placeholder={t('clients.placeholders.name', 'e.g., John Doe')}
               />
               {errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
             </div>
@@ -207,7 +207,7 @@ export default function ProviderModal({
                 onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
                 disabled={isSubmitting}
                 className="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder={t('providers.placeholders.businessName', 'e.g., Acme Inc.')}
+                placeholder={t('clients.placeholders.businessName', 'e.g., Acme Inc.')}
               />
             </div>
           </div>
@@ -228,7 +228,7 @@ export default function ProviderModal({
                     ? 'border-destructive focus:ring-destructive'
                     : 'border-border focus:ring-ring'
                 }`}
-                placeholder={t('providers.placeholders.email', 'contact@example.com')}
+                placeholder={t('clients.placeholders.email', 'contact@example.com')}
               />
               {errors.business_email && <p className="text-destructive text-sm mt-1">{errors.business_email}</p>}
             </div>
@@ -244,7 +244,7 @@ export default function ProviderModal({
                 onChange={(e) => setFormData({ ...formData, business_phone: e.target.value })}
                 disabled={isSubmitting}
                 className="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder={t('providers.placeholders.phone', '+1 (555) 000-0000')}
+                placeholder={t('clients.placeholders.phone', '+1 (555) 000-0000')}
               />
             </div>
           </div>

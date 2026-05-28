@@ -1,15 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import PageHeader from '@/app/components/page-header';
-import NewClientButton from '@/app/components/buttons/new-client-button';
-import ClientsTable from '@/app/components/tables/clients-table';
-import ClientModal from '@/app/components/modals/client-modal';
-import { useClients } from '@/contexts/ClientsContext';
+import NewClientButton from '@/app/pages/clients/components/new-client-button';
+import ClientsTable from '@/app/pages/clients/components/clients-table';
+import ClientModal from '@/app/pages/clients/components/client-modal';
+import { useClients } from '@/app/pages/clients/contexts/ClientsContext';
 import { Client } from '@/types/clients';
 
 export default function ClientsPage() {
   const { t } = useTranslation();
-  const { refreshClients } = useClients();
+  const { clients, isLoading, refreshClients } = useClients();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
@@ -33,16 +33,16 @@ export default function ClientsPage() {
             description={t('pages.clients.description')}
           />
         </div>
-        <NewClientButton />
+        <NewClientButton onSubmit={refreshClients} />
       </div>
 
-      <ClientsTable onEdit={handleEditClient} />
+      <ClientsTable clients={clients} isLoading={isLoading} onRefresh={refreshClients} onEdit={handleEditClient} />
 
       <ClientModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         client={selectedClient || undefined}
-        onClientCreated={handleClientCreated}
+        onSubmit={handleClientCreated}
       />
     </div>
   );

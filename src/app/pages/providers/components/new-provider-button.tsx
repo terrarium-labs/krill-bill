@@ -2,16 +2,18 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import ProviderModal from '@/app/components/modals/provider-modal';
-import { useProviders } from '@/contexts/ProvidersContext';
+import ProviderModal from '@/app/pages/providers/components/provider-modal';
 
-export default function NewProviderButton() {
+interface NewProviderButtonProps {
+  onSubmit?: () => Promise<void>;
+}
+
+export default function NewProviderButton({ onSubmit }: NewProviderButtonProps) {
   const { t } = useTranslation();
-  const { refreshProviders } = useProviders();
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleProviderCreated = async () => {
-    await refreshProviders();
+    await onSubmit?.();
     setModalOpen(false);
   };
 
@@ -25,7 +27,7 @@ export default function NewProviderButton() {
         <Plus size={18} />
         {t('pages.providers.newProvider')}
       </Button>
-      <ProviderModal open={modalOpen} onOpenChange={setModalOpen} onProviderCreated={handleProviderCreated} />
+      <ProviderModal open={modalOpen} onOpenChange={setModalOpen} onSubmit={handleProviderCreated} />
     </>
   );
 }

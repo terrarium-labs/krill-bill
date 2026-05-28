@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { getTextColorClasses } from '@/app/utils/colors';
-import NewInvoiceButton from '@/app/components/buttons/new-invoice-button';
-import NewClientButton from '@/app/components/buttons/new-client-button';
+import NewInvoiceButton from '@/app/pages/invoices/components/new-invoice-button';
+import NewClientButton from '@/app/pages/clients/components/new-client-button';
 import PageHeader from '@/app/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 

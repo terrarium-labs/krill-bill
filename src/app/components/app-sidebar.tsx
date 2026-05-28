@@ -1,5 +1,5 @@
 import { ChevronRight, Home, Settings, FileText, Users, Boxes } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAccentBgSoftClasses, getAccentTextSoftClasses } from '@/app/utils/colors';
@@ -17,35 +17,37 @@ interface NavItem {
     children?: NavItem[];
 }
 
-const navItems: NavItem[] = [
-    { label: 'sidebar.dashboard', href: '/', icon: Home },
-    { label: 'sidebar.invoices', href: '/invoices', icon: FileText },
-    { label: 'sidebar.clients', href: '/clients', icon: Users },
-    { label: 'sidebar.providers', href: '/providers', icon: Boxes },
-    {
-        label: 'sidebar.settings',
-        icon: Settings,
-        children: [
-            { label: 'sidebar.profile', href: '/settings/profile' },
-            { label: 'sidebar.general', href: '/settings/general' },
-            { label: 'sidebar.serialPatterns', href: '/settings/serial-numbers' },
-        ],
-    },
-];
-
 export function AppSidebar() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { orgId } = useParams<{ orgId: string }>();
     const [expandedSettings, setExpandedSettings] = useState(false);
     const { open } = useSidebar();
     const { t } = useTranslation();
+
+    // Build navigation items with dynamic orgId paths
+    const navItems: NavItem[] = [
+        { label: 'sidebar.dashboard', href: `/orgs/${orgId}`, icon: Home },
+        { label: 'sidebar.invoices', href: `/orgs/${orgId}/invoices`, icon: FileText },
+        { label: 'sidebar.clients', href: `/orgs/${orgId}/clients`, icon: Users },
+        { label: 'sidebar.providers', href: `/orgs/${orgId}/providers`, icon: Boxes },
+        {
+            label: 'sidebar.settings',
+            icon: Settings,
+            children: [
+                { label: 'sidebar.profile', href: `/orgs/${orgId}/settings/profile` },
+                { label: 'sidebar.general', href: `/orgs/${orgId}/settings/general` },
+                { label: 'sidebar.serialPatterns', href: `/orgs/${orgId}/settings/serial-numbers` },
+            ],
+        },
+    ];
 
     const isActive = (href?: string) => {
         if (!href) return false;
         return location.pathname === href;
     };
 
-    const isSettingsActive = location.pathname.startsWith('/settings');
+    const isSettingsActive = location.pathname.startsWith(`/orgs/${orgId}/settings`);
 
     return (
         <nav className="flex flex-col h-full [&_svg]:flex-shrink-0">

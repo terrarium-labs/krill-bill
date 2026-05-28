@@ -3,61 +3,61 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ArrowLeft, Save, Trash2 } from 'lucide-react';
 import { useOrg } from '@/contexts/OrgContext';
-import { fetchProviderById, updateProvider, deleteProvider } from '@/api/providers';
-import { Provider } from '@/types/providers';
+import { fetchClientById, updateClient, deleteClient } from '@/api/clients';
+import { Client } from '@/types/clients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { DeleteModal } from '@/app/components/modals/delete-modal';
 import PageHeader from '@/app/components/page-header';
 
-export default function ProviderDetailPage() {
-  const { id } = useParams();
+export default function ClientDetailPage() {
+  const { clientId: id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { org } = useOrg();
-  const [provider, setProvider] = useState<Provider | null>(null);
+  const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [formData, setFormData] = useState<Partial<Provider>>({});
+  const [formData, setFormData] = useState<Partial<Client>>({});
 
   useEffect(() => {
-    const loadProvider = async () => {
+    const loadClient = async () => {
       if (!org?.id || !id) return;
       try {
-        const { data, error } = await fetchProviderById(org.id, id);
+        const { data, error } = await fetchClientById(org.id, id);
         if (error) {
           toast.error(error);
-          navigate('/providers');
+          navigate('/clients');
         } else {
-          setProvider(data);
+          setClient(data);
           setFormData(data || {});
         }
       } catch (error) {
-        toast.error(t('errors.failedToLoad', 'Failed to load provider'));
+        toast.error(t('errors.failedToLoad', 'Failed to load client'));
       } finally {
         setLoading(false);
       }
     };
 
-    loadProvider();
+    loadClient();
   }, [id, org?.id, navigate, t]);
 
   const handleSave = async () => {
     if (!org?.id || !id) return;
     setSaving(true);
     try {
-      const { error } = await updateProvider(org.id, id, formData);
+      const { error } = await updateClient(org.id, id, formData);
       if (error) {
         toast.error(error);
       } else {
-        setProvider({ ...provider, ...formData } as Provider);
-        toast.success(t('providers.updatedSuccess', 'Provider updated successfully'));
+        setClient({ ...client, ...formData } as Client);
+        toast.success(t('clients.updatedSuccess', 'Client updated successfully'));
       }
     } catch (error) {
-      toast.error(t('errors.failedToUpdate', 'Failed to update provider'));
+      toast.error(t('errors.failedToUpdate', 'Failed to update client'));
     } finally {
       setSaving(false);
     }
@@ -68,16 +68,16 @@ export default function ProviderDetailPage() {
 
     setDeleting(true);
     try {
-      const { error } = await deleteProvider(org.id, id);
+      const { error } = await deleteClient(org.id, id);
       if (error) {
         toast.error(error);
       } else {
-        toast.success(t('providers.deletedSuccess', 'Provider deleted successfully'));
+        toast.success(t('clients.deletedSuccess', 'Client deleted successfully'));
         setDeleteModalOpen(false);
-        navigate('/providers');
+        navigate('/clients');
       }
     } catch (error) {
-      toast.error(t('errors.failedToDelete', 'Failed to delete provider'));
+      toast.error(t('errors.failedToDelete', 'Failed to delete client'));
     } finally {
       setDeleting(false);
     }
@@ -91,10 +91,10 @@ export default function ProviderDetailPage() {
     );
   }
 
-  if (!provider) {
+  if (!client) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('errors.notFound', 'Provider not found')}</p>
+        <p className="text-muted-foreground">{t('errors.notFound', 'Client not found')}</p>
       </div>
     );
   }
@@ -104,8 +104,8 @@ export default function ProviderDetailPage() {
       <DeleteModal
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
-        title={t('providers.deleteTitle', 'Delete Provider?')}
-        description={t('providers.deleteDescription', `Are you sure you want to delete "${provider?.name}"? This action cannot be undone.`)}
+        title={t('clients.deleteTitle', 'Delete Client?')}
+        description={t('clients.deleteDescription', `Are you sure you want to delete "${client?.name}"? This action cannot be undone.`)}
         onConfirm={handleDelete}
         isDeleting={deleting}
         deleteText={t('common.delete', 'Delete')}
@@ -114,7 +114,7 @@ export default function ProviderDetailPage() {
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
-          onClick={() => navigate('/providers')}
+          onClick={() => navigate('/clients')}
           className="gap-2"
         >
           <ArrowLeft size={16} />
@@ -141,8 +141,8 @@ export default function ProviderDetailPage() {
       </div>
 
       <PageHeader
-        title={provider.business_name || provider.name}
-        description={t('providers.editProvider', 'Edit provider information')}
+        title={client.business_name || client.name}
+        description={t('clients.editClient', 'Edit client information')}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -313,11 +313,11 @@ export default function ProviderDetailPage() {
           <CardContent className="space-y-4 text-sm">
             <div>
               <label className="text-muted-foreground">{t('common.createdAt', 'Created At')}</label>
-              <p className="text-foreground">{provider.created_at ? new Date(provider.created_at).toLocaleString() : '-'}</p>
+              <p className="text-foreground">{client.created_at ? new Date(client.created_at).toLocaleString() : '-'}</p>
             </div>
             <div>
               <label className="text-muted-foreground">{t('common.updatedAt', 'Updated At')}</label>
-              <p className="text-foreground">{provider.updated_at ? new Date(provider.updated_at).toLocaleString() : '-'}</p>
+              <p className="text-foreground">{client.updated_at ? new Date(client.updated_at).toLocaleString() : '-'}</p>
             </div>
           </CardContent>
         </Card>

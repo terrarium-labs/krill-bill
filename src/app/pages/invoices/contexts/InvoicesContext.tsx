@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { useOrg } from '@/contexts/OrgContext';
 import { fetchInvoices } from '@/api/invoices';
+import { PageSkeleton } from '@/components/ui/page-skeleton';
 
 interface Invoice {
   id: string;
@@ -26,34 +27,28 @@ interface Invoice {
   items?: unknown[];
 }
 
-interface UseInvoicesReturn {
+interface InvoicesContextType {
   invoices: Invoice[];
   isLoading: boolean;
-  error: string | null;
   refreshInvoices: () => Promise<void>;
 }
 
-export const useInvoices = (): UseInvoicesReturn => {
+const InvoicesContext = createContext<InvoicesContextType | undefined>(undefined);
+
+export const InvoicesProvider = ({ children }: { children: React.ReactNode }) => {
   const { org } = useOrg();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const isFetchingRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchInvoicesList = async () => {
-    if (!org?.id || isFetchingRef.current) return;
-
-    isFetchingRef.current = true;
-
+    if (!org?.id) return;
     try {
       setIsLoading(true);
-      setError(null);
       console.log('Fetching invoices for org:', org.id);
 
       const { data, error: fetchError } = await fetchInvoices(org.id);
       if (fetchError) {
         console.error('Error fetching invoices:', fetchError);
-        setError(fetchError);
         setInvoices([]);
         return;
       }
@@ -65,11 +60,9 @@ export const useInvoices = (): UseInvoicesReturn => {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load invoices';
       console.error('Error:', message);
-      setError(message);
       setInvoices([]);
     } finally {
       setIsLoading(false);
-      isFetchingRef.current = false;
     }
   };
 
@@ -79,18 +72,31 @@ export const useInvoices = (): UseInvoicesReturn => {
     }
   }, [org?.id]);
 
-  const refreshInvoices = async () => {
-    if (!org?.id) return;
-    const { data, error: fetchError } = await fetchInvoices(org.id);
-    if (!fetchError && data) {
-      setInvoices(data);
-    }
-  };
+  const refreshInvoices = useCallback(async () => {
+    await fetchInvoicesList();
+  }, []);
 
-  return {
+  const contextValue = useMemo(() => ({
     invoices,
     isLoading,
-    error,
     refreshInvoices,
-  };
+  }), [invoices, isLoading, refreshInvoices]);
+
+  if (isLoading && invoices.length === 0) {
+    return <PageSkeleton showBackButton={true} showIcon={true} tabCount={2} variant="split" />;
+  }
+
+  return (
+    <InvoicesContext.Provider value={contextValue}>
+      {children}
+    </InvoicesContext.Provider>
+  );
+};
+
+export const useInvoices = () => {
+  const context = useContext(InvoicesContext);
+  if (context === undefined) {
+    throw new Error('useInvoices must be used within an InvoicesProvider');
+  }
+  return context;
 };

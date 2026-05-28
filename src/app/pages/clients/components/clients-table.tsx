@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, Eye, Edit2, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useOrg } from '@/contexts/OrgContext';
-import { useClients } from '@/contexts/ClientsContext';
 import { deleteClient } from '@/api/clients';
 import { Client } from '@/types/clients';
 import { Button } from '@/components/ui/button';
@@ -20,14 +19,16 @@ import {
 import { Card } from '@/components/ui/card';
 
 interface ClientsTableProps {
+  clients: Client[];
+  isLoading: boolean;
+  onRefresh: () => Promise<void>;
   onEdit?: (client: Client) => void;
 }
 
-export default function ClientsTable({ onEdit }: ClientsTableProps) {
+export default function ClientsTable({ clients, isLoading, onRefresh, onEdit }: ClientsTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { org } = useOrg();
-  const { clients, isLoading, refreshClients } = useClients();
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedClientToDelete, setSelectedClientToDelete] = useState<Client | null>(null);
@@ -47,7 +48,7 @@ export default function ClientsTable({ onEdit }: ClientsTableProps) {
         toast.error(error);
       } else {
         toast.success(t('clients.deletedSuccess', 'Client deleted successfully'));
-        await refreshClients();
+        await onRefresh();
         setDeleteModalOpen(false);
       }
     } catch (error) {

@@ -6,24 +6,6 @@ import { Provider } from '@/types/providers';
  */
 export const fetchOrgProviders = async (orgId: string): Promise<{ data: Provider[] | null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify user has access to this org
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('*')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember) {
-      console.error('API: User does not have access to org:', orgId);
-      return { data: null, error: 'Access denied' };
-    }
-
     const { data, error } = await supabase
       .from('providers')
       .select('*')
@@ -49,23 +31,6 @@ export const fetchOrgProviders = async (orgId: string): Promise<{ data: Provider
  */
 export const fetchProviderById = async (orgId: string, providerId: string): Promise<{ data: Provider | null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('*')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember) {
-      return { data: null, error: 'Access denied' };
-    }
-
     const { data, error } = await supabase
       .from('providers')
       .select('*')
@@ -91,23 +56,6 @@ export const fetchProviderById = async (orgId: string, providerId: string): Prom
  */
 export const createProvider = async (orgId: string, providerData: Omit<Provider, 'id' | 'org_id' | 'created_at' | 'updated_at'>): Promise<{ data: Provider | null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access and permission
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember) {
-      return { data: null, error: 'Access denied' };
-    }
-
     const { data, error } = await supabase
       .from('providers')
       .insert([{ ...providerData, org_id: orgId }])
@@ -133,23 +81,6 @@ export const createProvider = async (orgId: string, providerData: Omit<Provider,
  */
 export const updateProvider = async (orgId: string, providerId: string, updates: Partial<Provider>): Promise<{ data: null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access and admin permission
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember || !['owner', 'admin'].includes(orgMember.role)) {
-      return { data: null, error: 'Permission denied' };
-    }
-
     const { error } = await supabase
       .from('providers')
       .update(updates)
@@ -175,23 +106,6 @@ export const updateProvider = async (orgId: string, providerId: string, updates:
  */
 export const deleteProvider = async (orgId: string, providerId: string): Promise<{ data: null; error: string | null }> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return { data: null, error: 'User not authenticated' };
-    }
-
-    // Verify access and admin permission
-    const { data: orgMember } = await supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (!orgMember || !['owner', 'admin'].includes(orgMember.role)) {
-      return { data: null, error: 'Permission denied' };
-    }
-
     const { error } = await supabase
       .from('providers')
       .delete()
