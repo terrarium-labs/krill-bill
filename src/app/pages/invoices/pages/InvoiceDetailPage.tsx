@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ArrowLeft, Save, Trash2, Download } from 'lucide-react';
 import { fetchInvoiceById, updateInvoice, deleteInvoice, Invoice, InvoiceItem } from '@/api/invoices';
+import { useOrg } from '@/contexts/OrgContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ export default function InvoiceDetailPage() {
   const { invoiceId: id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { org } = useOrg();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -65,11 +67,11 @@ export default function InvoiceDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!id || !org?.id) return;
 
     setDeleting(true);
     try {
-      const { error } = await deleteInvoice(id);
+      const { error } = await deleteInvoice(org.id, id);
       if (error) {
         toast.error(error);
       } else {

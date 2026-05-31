@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, Eye, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { deleteInvoice } from '@/api/invoices';
+import { useOrg } from '@/contexts/OrgContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { DeleteModal } from '@/app/components/modals/delete-modal';
@@ -45,6 +46,7 @@ interface InvoicesTableProps {
 export default function InvoicesTable({ invoices, isLoading, onRefresh }: InvoicesTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { org } = useOrg();
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedInvoiceToDelete, setSelectedInvoiceToDelete] = useState<typeof invoices[0] | null>(null);
@@ -55,15 +57,17 @@ export default function InvoicesTable({ invoices, isLoading, onRefresh }: Invoic
   };
 
   const handleDelete = async () => {
-    if (!selectedInvoiceToDelete) return;
+    if (!org?.id || !selectedInvoiceToDelete) return;
 
     setDeleting(selectedInvoiceToDelete.id);
     try {
-      const { error } = await deleteInvoice(selectedInvoiceToDelete.id);
+      const { error } = await deleteInvoice(org.id, selectedInvoiceToDelete.id);
       if (error) {
         toast.error(error);
       } else {
         toast.success(t('invoices.deletedSuccess', 'Invoice deleted successfully'));
+        // Add delay to ensure database has processed the deletion
+        await new Promise(resolve => setTimeout(resolve, 500));
         await onRefresh();
         setDeleteModalOpen(false);
       }

@@ -114,12 +114,13 @@ export const updateInvoice = async (id: string, updates: Partial<Invoice>) => {
 /**
  * Delete an invoice
  */
-export const deleteInvoice = async (id: string) => {
+export const deleteInvoice = async (orgId: string, id: string) => {
     try {
         const { error } = await supabase
             .from('invoices')
             .delete()
-            .eq('id', id);
+            .eq('id', id)
+            .eq('organization_id', orgId);
 
         if (error) throw error;
         return { error: null };

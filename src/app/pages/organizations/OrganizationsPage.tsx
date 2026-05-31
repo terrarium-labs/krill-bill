@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from '@/components/ui/input';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 
-export default function OrgSelectionPage() {
+export default function OrganizationsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
@@ -56,7 +56,7 @@ export default function OrgSelectionPage() {
     localStorage.setItem('selectedOrgId', org.id);
     localStorage.setItem('selectedOrgName', org.business_name || org.name);
     // Redirect to dashboard
-    navigate('/dashboard');
+    navigate(`/orgs/${org.id}`);
   };
 
   const handleLogout = async () => {
@@ -111,7 +111,7 @@ export default function OrgSelectionPage() {
   };
 
   if (authLoading || isLoading) {
-    return <PageSkeleton showBackButton={false} showIcon={true} tabCount={1} variant="full" />;
+    return <PageSkeleton showBackButton={false} showIcon={true} tabCount={1} variant="default" />;
   }
 
   return (

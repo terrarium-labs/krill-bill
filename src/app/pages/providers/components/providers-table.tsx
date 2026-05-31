@@ -48,6 +48,8 @@ export default function ProvidersTable({ providers, isLoading, onRefresh, onEdit
         toast.error(error);
       } else {
         toast.success(t('providers.deletedSuccess', 'Provider deleted successfully'));
+        // Add delay to ensure database has processed the deletion
+        await new Promise(resolve => setTimeout(resolve, 500));
         await onRefresh();
         setDeleteModalOpen(false);
       }

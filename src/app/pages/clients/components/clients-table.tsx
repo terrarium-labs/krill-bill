@@ -48,6 +48,8 @@ export default function ClientsTable({ clients, isLoading, onRefresh, onEdit }: 
         toast.error(error);
       } else {
         toast.success(t('clients.deletedSuccess', 'Client deleted successfully'));
+        // Add delay to ensure database has processed the deletion
+        await new Promise(resolve => setTimeout(resolve, 500));
         await onRefresh();
         setDeleteModalOpen(false);
       }
