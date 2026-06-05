@@ -1,7 +1,11 @@
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
-const DEBUG = process.env.NODE_ENV === "development";
+// Backend API Configuration
+export const API_BASE_URL = 
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:8787"; // Default to local backend
+
+const DEBUG = import.meta.env.MODE === "development";
 /**
  * Sonner only accepts string/ReactNode; API errors may return `detail` or `message` as objects
  * (e.g. `{ message, errors }`).
@@ -160,14 +164,19 @@ const handleResponse = async (
                 success: "OK",
             });
         }
-        return { success: "OK" };
+        return { data: null };
     }
 
-    const data = await response.json();
+    const responseData = await response.json();
+    
+    // Extract data from backend response format { success: true, data: ... }
+    const data = responseData?.data || responseData;
+    
     if (DEBUG) {
         console.log(`Fetch (${options.method || "GET"}): ${url}`, {
-            success: data,
+            data: data,
         });
     }
-    return { success: data };
+    
+    return { data };
 };

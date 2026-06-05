@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { apiFetch, API_BASE_URL } from './api'
 import { OrganizationPartner, CreateOrganizationPartnerInput } from '@/types/organization'
 
 /**
@@ -6,27 +6,20 @@ import { OrganizationPartner, CreateOrganizationPartnerInput } from '@/types/org
  */
 export const fetchOrganizationPartners = async (orgId: string) => {
   try {
-    const { data, error } = await supabase
-      .from('organization_partners')
-      .select(`
-        *,
-        partner_org:partner_organization_id (
-          id,
-          name,
-          business_name,
-          business_email,
-          business_phone,
-          country,
-          currency
-        )
-      `)
-      .eq('organization_id', orgId)
+    const response = await apiFetch(
+      new URL(`${API_BASE_URL}/partners/${orgId}`),
+      { method: 'GET' }
+    );
 
-    if (error) throw error
-    return { data: (data as any[]) || [], error: null }
+    if ('error' in response) {
+      return { data: [], error: response.error };
+    }
+
+    const data = response.data as any[];
+    return { data: data || [], error: null };
   } catch (error: any) {
-    console.error('Error fetching organization partners:', error)
-    return { data: [], error: error.message }
+    console.error('Error fetching organization partners:', error);
+    return { data: [], error: error.message };
   }
 }
 
@@ -38,39 +31,45 @@ export const addOrganizationPartner = async (
   input: CreateOrganizationPartnerInput
 ) => {
   try {
-    const { data, error } = await supabase
-      .from('organization_partners')
-      .insert({
-        organization_id: orgId,
-        partner_organization_id: input.partner_organization_id,
-        partner_type: input.partner_type,
-      })
-      .select()
-      .single()
+    const response = await apiFetch(
+      new URL(`${API_BASE_URL}/partners/${orgId}`),
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      }
+    );
 
-    if (error) throw error
-    return { data: (data as OrganizationPartner) || null, error: null }
+    if ('error' in response) {
+      return { data: null, error: response.error };
+    }
+
+    const data = response.data as OrganizationPartner;
+    return { data, error: null };
   } catch (error: any) {
-    console.error('Error adding organization partner:', error)
-    return { data: null, error: error.message }
+    console.error('Error adding organization partner:', error);
+    return { data: null, error: error.message };
   }
 }
 
 /**
  * Remove a partner from an organization
  */
-export const removeOrganizationPartner = async (partnerId: string) => {
+export const removeOrganizationPartner = async (partnerId: string, orgId: string) => {
   try {
-    const { error } = await supabase
-      .from('organization_partners')
-      .delete()
-      .eq('id', partnerId)
+    const response = await apiFetch(
+      new URL(`${API_BASE_URL}/partners/${partnerId}?org_id=${orgId}`),
+      { method: 'DELETE' }
+    );
 
-    if (error) throw error
-    return { error: null }
+    if ('error' in response) {
+      return { error: response.error };
+    }
+
+    return { error: null };
   } catch (error: any) {
-    console.error('Error removing organization partner:', error)
-    return { error: error.message }
+    console.error('Error removing organization partner:', error);
+    return { error: error.message };
   }
 }
 
@@ -79,20 +78,27 @@ export const removeOrganizationPartner = async (partnerId: string) => {
  */
 export const updateOrganizationPartner = async (
   partnerId: string,
+  orgId: string,
   partnerType: 'client' | 'provider'
 ) => {
   try {
-    const { data, error } = await supabase
-      .from('organization_partners')
-      .update({ partner_type: partnerType })
-      .eq('id', partnerId)
-      .select()
-      .single()
+    const response = await apiFetch(
+      new URL(`${API_BASE_URL}/partners/${partnerId}?org_id=${orgId}`),
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ partner_type: partnerType }),
+      }
+    );
 
-    if (error) throw error
-    return { data: (data as OrganizationPartner) || null, error: null }
+    if ('error' in response) {
+      return { data: null, error: response.error };
+    }
+
+    const data = response.data as OrganizationPartner;
+    return { data, error: null };
   } catch (error: any) {
-    console.error('Error updating organization partner:', error)
-    return { data: null, error: error.message }
+    console.error('Error updating organization partner:', error);
+    return { data: null, error: error.message };
   }
 }

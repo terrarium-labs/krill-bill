@@ -1,5 +1,4 @@
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+import { apiFetch, API_BASE_URL } from './api';
 
 export interface InvoiceItem {
     id?: string;
@@ -39,14 +38,17 @@ export interface Invoice {
  */
 export const fetchInvoices = async (orgId: string) => {
     try {
-        const { data, error } = await supabase
-            .from('invoices')
-            .select('*')
-            .eq('organization_id', orgId)
-            .order('issue_date', { ascending: false });
+        const response = await apiFetch(
+            new URL(`${API_BASE_URL}/invoices?org_id=${orgId}`),
+            { method: 'GET' }
+        );
 
-        if (error) throw error;
-        return { data: (data as Invoice[]) || [], error: null };
+        if ('error' in response) {
+            return { data: [], error: response.error };
+        }
+
+        const data = response.data as Invoice[];
+        return { data: data || [], error: null };
     } catch (error: any) {
         console.error('Error fetching invoices:', error);
         return { data: [], error: error.message };
@@ -58,14 +60,17 @@ export const fetchInvoices = async (orgId: string) => {
  */
 export const fetchInvoiceById = async (id: string) => {
     try {
-        const { data, error } = await supabase
-            .from('invoices')
-            .select('*')
-            .eq('id', id)
-            .single();
+        const response = await apiFetch(
+            new URL(`${API_BASE_URL}/invoices/${id}`),
+            { method: 'GET' }
+        );
 
-        if (error) throw error;
-        return { data: data as Invoice, error: null };
+        if ('error' in response) {
+            return { data: null, error: response.error };
+        }
+
+        const data = response.data as Invoice;
+        return { data, error: null };
     } catch (error: any) {
         console.error('Error fetching invoice:', error);
         return { data: null, error: error.message };
@@ -77,14 +82,21 @@ export const fetchInvoiceById = async (id: string) => {
  */
 export const createInvoice = async (invoice: Omit<Invoice, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     try {
-        const { data, error } = await supabase
-            .from('invoices')
-            .insert([invoice])
-            .select()
-            .single();
+        const response = await apiFetch(
+            new URL(`${API_BASE_URL}/invoices?org_id=${invoice.organization_id}`),
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(invoice),
+            }
+        );
 
-        if (error) throw error;
-        return { data: data as Invoice, error: null };
+        if ('error' in response) {
+            return { data: null, error: response.error };
+        }
+
+        const data = response.data as Invoice;
+        return { data, error: null };
     } catch (error: any) {
         console.error('Error creating invoice:', error);
         return { data: null, error: error.message };
@@ -96,15 +108,21 @@ export const createInvoice = async (invoice: Omit<Invoice, 'id' | 'user_id' | 'c
  */
 export const updateInvoice = async (id: string, updates: Partial<Invoice>) => {
     try {
-        const { data, error } = await supabase
-            .from('invoices')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+        const response = await apiFetch(
+            new URL(`${API_BASE_URL}/invoices/${id}`),
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates),
+            }
+        );
 
-        if (error) throw error;
-        return { data: data as Invoice, error: null };
+        if ('error' in response) {
+            return { data: null, error: response.error };
+        }
+
+        const data = response.data as Invoice;
+        return { data, error: null };
     } catch (error: any) {
         console.error('Error updating invoice:', error);
         return { data: null, error: error.message };
@@ -116,13 +134,15 @@ export const updateInvoice = async (id: string, updates: Partial<Invoice>) => {
  */
 export const deleteInvoice = async (orgId: string, id: string) => {
     try {
-        const { error } = await supabase
-            .from('invoices')
-            .delete()
-            .eq('id', id)
-            .eq('organization_id', orgId);
+        const response = await apiFetch(
+            new URL(`${API_BASE_URL}/invoices/${id}`),
+            { method: 'DELETE' }
+        );
 
-        if (error) throw error;
+        if ('error' in response) {
+            return { error: response.error };
+        }
+
         return { error: null };
     } catch (error: any) {
         console.error('Error deleting invoice:', error);
@@ -135,19 +155,16 @@ export const deleteInvoice = async (orgId: string, id: string) => {
  */
 export const getInvoiceStats = async (orgId: string) => {
     try {
-        const { data, error } = await supabase
-            .from('invoices')
-            .select('amount, status')
-            .eq('organization_id', orgId);
+        const response = await apiFetch(
+            new URL(`${API_BASE_URL}/invoices/stats/${orgId}`),
+            { method: 'GET' }
+        );
 
-        if (error) throw error;
+        if ('error' in response) {
+            throw new Error(response.error);
+        }
 
-        const stats = {
-            total: data?.length || 0,
-            totalAmount: data?.reduce((sum: number, inv: any) => sum + (inv.amount || 0), 0) || 0,
-            paid: data?.filter((inv: any) => inv.status === 'paid').length || 0,
-            pending: data?.filter((inv: any) => inv.status === 'sent' || inv.status === 'draft').length || 0,
-        };
+        return response.data;
 
         return { data: stats, error: null };
     } catch (error: any) {
