@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { Download, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -41,33 +41,35 @@ export default function InvoicePage() {
   const navigate = useNavigate();
   const { contacts } = useContacts();
   const { add, update, remove } = useInvoices();
+  const isNew = id === "new";
+  const creatingRef = useRef(false);
   const [draft, setDraft] = useState<Invoice | null>(() =>
-    id && id !== "new" ? (getInvoice(id) ?? null) : null,
+    id && !isNew ? (getInvoice(id) ?? null) : null,
   );
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    if (id === "new" && !draft) {
-      const company = getCompanyProfile();
-      const issueDate = todayIso();
-      const invoice = add({
-        from: company ? contactToParty(company) : emptyParty("Your company"),
-        to: emptyParty(),
-        currency: company?.currency ?? "EUR",
-        issue_date: issueDate,
-        due_date: issueDate,
-      });
-      setDraft(invoice);
-      navigate(`/invoices/${invoice.id}`, { replace: true });
-    }
-  }, [id, draft, add, navigate]);
+    if (!isNew || draft || creatingRef.current) return;
+    creatingRef.current = true;
+
+    const company = getCompanyProfile();
+    const issueDate = todayIso();
+    const invoice = add({
+      from: company ? contactToParty(company) : emptyParty("Your company"),
+      to: emptyParty(),
+      currency: company?.currency ?? "EUR",
+      issue_date: issueDate,
+      due_date: issueDate,
+    });
+    setDraft(invoice);
+    navigate(`/invoices/${invoice.id}`, { replace: true });
+  }, [isNew, draft, add, navigate]);
 
   useEffect(() => {
-    if (id && id !== "new") {
-      const existing = getInvoice(id);
-      if (existing) setDraft(existing);
-    }
-  }, [id]);
+    if (!id || isNew) return;
+    const existing = getInvoice(id);
+    if (existing) setDraft(existing);
+  }, [id, isNew]);
 
   const sortedContacts = useMemo(
     () => [...contacts].sort((a, b) => a.name.localeCompare(b.name)),
@@ -134,10 +136,16 @@ export default function InvoicePage() {
   if (!draft) {
     return (
       <div className="py-16 text-center text-muted-foreground">
-        Invoice not found.{" "}
-        <Link to="/invoices" className="text-foreground underline">
-          Back to invoices
-        </Link>
+        {isNew ? (
+          "Creating invoice…"
+        ) : (
+          <>
+            Invoice not found.{" "}
+            <Link to="/invoices" className="text-foreground underline">
+              Back to invoices
+            </Link>
+          </>
+        )}
       </div>
     );
   }

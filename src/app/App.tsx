@@ -17,7 +17,6 @@ export default function App() {
             <Route element={<AppLayout />}>
               <Route index element={<LandingPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
-              <Route path="invoices/new" element={<InvoicePage />} />
               <Route path="invoices/:id" element={<InvoicePage />} />
               <Route path="contacts" element={<ContactsPage />} />
               <Route path="settings" element={<SettingsPage />} />
