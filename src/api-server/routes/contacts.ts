@@ -28,12 +28,23 @@ async function writeContacts(kv: KVNamespace | undefined, contacts: Contact[]) {
   await kv.put(KV_KEY, JSON.stringify(contacts));
 }
 
+function kvUnavailableResponse(c: { json: (body: unknown, status?: number) => Response }) {
+  return c.json(
+    errorResponse(
+      "Contact sync requires a CONTACTS_KV binding. Data is stored locally in the browser.",
+      "SERVICE_UNAVAILABLE",
+    ),
+    503,
+  );
+}
+
 contactsRouter.get("/contacts", async (c) => {
   const contacts = await readContacts(c.env.CONTACTS_KV);
   return c.json(successResponse(contacts));
 });
 
 contactsRouter.post("/contacts", zValidator("json", createContactSchema), async (c) => {
+  if (!c.env.CONTACTS_KV) return kvUnavailableResponse(c);
   try {
     const input = c.req.valid("json");
     const now = new Date().toISOString();
@@ -59,6 +70,7 @@ contactsRouter.post("/contacts", zValidator("json", createContactSchema), async 
 });
 
 contactsRouter.put("/contacts/:id", zValidator("json", updateContactSchema), async (c) => {
+  if (!c.env.CONTACTS_KV) return kvUnavailableResponse(c);
   try {
     const id = c.req.param("id");
     const input = c.req.valid("json");
@@ -84,6 +96,7 @@ contactsRouter.put("/contacts/:id", zValidator("json", updateContactSchema), asy
 });
 
 contactsRouter.delete("/contacts/:id", async (c) => {
+  if (!c.env.CONTACTS_KV) return kvUnavailableResponse(c);
   try {
     const id = c.req.param("id");
     const contacts = await readContacts(c.env.CONTACTS_KV);

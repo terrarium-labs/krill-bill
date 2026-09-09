@@ -2,10 +2,13 @@ name = "krill-bill"
 main = "src/api-server/index.ts"
 compatibility_date = "2026-09-01"
 
-[[kv_namespaces]]
-binding = "CONTACTS_KV"
-id = "00000000000000000000000000000000"
-preview_id = "00000000000000000000000000000000"
+# Optional cloud contact sync — create a namespace, then uncomment:
+#   wrangler kv namespace create CONTACTS_KV
+#   wrangler kv namespace create CONTACTS_KV --preview
+# [[kv_namespaces]]
+# binding = "CONTACTS_KV"
+# id = "<production-namespace-id>"
+# preview_id = "<preview-namespace-id>"
 
 [assets]
 not_found_handling = "single-page-application"
@@ -14,7 +17,6 @@ run_worker_first = ["/api/*", "/health", "/health/*"]
 
 [vars]
 ENVIRONMENT = "development"
-ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
 
 [env.production]
 name = "krill-bill"

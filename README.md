@@ -43,9 +43,23 @@ Open **http://localhost:5173**.
 | Browser | `krill-bill:invoices` | Saved invoices |
 | Browser | `krill-bill:contacts` | Contact directory |
 | Browser | `krill-bill:company` | Your company profile (invoice issuer) |
-| Worker KV | `GET/POST /api/contacts` | Optional cloud backup when KV is configured |
+| Worker KV | `GET/POST /api/contacts` | Optional cloud backup — enable by adding a KV namespace in `wrangler.toml` |
 
-Replace the placeholder KV namespace IDs in `wrangler.toml` before production deploy.
+### Deploy
+
+```bash
+bun run build
+npx wrangler deploy --env production
+```
+
+The app deploys without KV — invoices and contacts use browser `localStorage`. To enable optional KV contact sync later:
+
+```bash
+wrangler kv namespace create CONTACTS_KV
+wrangler kv namespace create CONTACTS_KV --preview
+```
+
+Then uncomment the `[[kv_namespaces]]` block in `wrangler.toml` with the returned IDs.
 
 ## Related
 
