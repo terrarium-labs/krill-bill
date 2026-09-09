@@ -1,0 +1,25 @@
+name = "krill-bill"
+main = "src/api-server/index.ts"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "CONTACTS_KV"
+id = "00000000000000000000000000000000"
+preview_id = "00000000000000000000000000000000"
+
+[assets]
+not_found_handling = "single-page-application"
+
+run_worker_first = ["/api/*", "/health", "/health/*"]
+
+[vars]
+ENVIRONMENT = "development"
+ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
+
+[env.production]
+name = "krill-bill"
+vars = { ENVIRONMENT = "production" }
+
+[env.staging]
+name = "krill-bill-staging"
+vars = { ENVIRONMENT = "staging" }

@@ -1,43 +1,52 @@
 # Krill Bill
 
-Krill Bill is an open invoice manager SaaS project, currently local-first, with planned cloud modules for expanded automation and integrations.
-
-This repository has been cleaned from a package-template baseline and now starts as a Bun-first Vite + React + TypeScript SPA.
-
-## Project Identity
-
-- Organization: terrarium-labs
-- Repository: krill-bill
-- Author/Maintainer: @xarlizard
+Open, free **invoice manager and viewer** — create invoices, auto-fill from contacts, export PDF. Hono on Cloudflare Workers + React SPA in one monorepo (dropafile-style layout).
 
 ## Stack
 
-- Vite
-- React
-- TypeScript
-- ESLint + Prettier
-- Bun
+```text
+src/
+├── api-server/   # Hono worker — /health, optional /api/contacts (KV)
+└── app/          # React SPA — invoices + contacts in localStorage
+```
 
-## Quick Start
+- **No login** — invoices and contacts stay in the browser (`localStorage`)
+- **No Supabase** — optional Cloudflare KV API for deployed sync
+- **Contact auto-fill** — pick a contact when editing an invoice; bill-to fields populate instantly
+- **PDF export** — browser print dialog (Save as PDF)
+
+## Quick start
 
 ```bash
 bun install
 bun run dev
 ```
 
+Open **http://localhost:5173**.
+
+1. Set your **company profile** under Company (issuer / From block)
+2. Add **contacts** (clients, providers, partners)
+3. **New invoice** → select a contact → add line items → **Export PDF**
+
 ## Scripts
 
-- `bun run dev` - Start local development server
-- `bun run build` - Type-check and build production assets
-- `bun run preview` - Preview production build locally
-- `bun run lint` - Run linter
-- `bun run lint:fix` - Fix linting issues
-- `bun run typecheck` - Run TypeScript checks
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Vite + Cloudflare worker |
+| `bun run build` | Production build |
+| `bun run deploy` | Build and deploy to Workers |
 
-## Deployment Direction
+## Storage
 
-Primary deployment target is Cloudflare Pages, managed manually through the Cloudflare Workers and Pages dashboard.
+| Layer | Key / route | Purpose |
+|-------|-------------|---------|
+| Browser | `krill-bill:invoices` | Saved invoices |
+| Browser | `krill-bill:contacts` | Contact directory |
+| Browser | `krill-bill:company` | Your company profile (invoice issuer) |
+| Worker KV | `GET/POST /api/contacts` | Optional cloud backup when KV is configured |
 
-## License
+Replace the placeholder KV namespace IDs in `wrangler.toml` before production deploy.
 
-Licensed under MIT. See `LICENSE`.
+## Related
+
+Former **`krill-bill-backend`** repo is merged into this monorepo.
